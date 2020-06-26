@@ -12,6 +12,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Okta.AspNetCore;
 using Stripe;
+using stutor_core.Services;
+using stutor_core.Services.Interfaces;
 
 namespace stutor_core
 {
@@ -52,6 +54,9 @@ namespace stutor_core
             // ... the rest of ConfigureServices
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddMvc();
+            
+            //Dependency injection code
+            services.AddTransient<IEmailService, EmailService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
