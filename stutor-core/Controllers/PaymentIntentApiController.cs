@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Stripe;
@@ -9,6 +7,7 @@ using Stripe;
 namespace stutor_core.Controllers
 {
     [Route("create-payment-intent")]
+    [Authorize]
     [ApiController]
     public class PaymentIntentApiController : Controller
     {

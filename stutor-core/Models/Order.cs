@@ -14,7 +14,6 @@ namespace stutor_core.Models
         public double Charge { get; set; }
         public string Status { get; set; }
         public string ClientPasskey { get; set; }
-        public string ExpertPasskey { get; set; }
         public DateTime Submitted { get; set; }
         public int callLength { get; set; }
     }

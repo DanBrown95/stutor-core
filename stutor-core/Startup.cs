@@ -14,6 +14,8 @@ using Okta.AspNetCore;
 using Stripe;
 using stutor_core.Services;
 using stutor_core.Services.Interfaces;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using stutor_core.Configurations;
 
 namespace stutor_core
 {
@@ -50,6 +52,10 @@ namespace stutor_core
             {
                 OktaDomain = "https://dev-870310.okta.com"
             });
+
+            SMSSettings smsSettings = new SMSSettings();
+            Configuration.GetSection("SMSSettings").Bind(smsSettings);
+            services.AddSingleton<SMSSettings>(smsSettings);
 
             // ... the rest of ConfigureServices
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);

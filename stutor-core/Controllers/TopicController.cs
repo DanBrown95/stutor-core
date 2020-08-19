@@ -16,6 +16,8 @@ namespace stutor_core.Controllers
         [HttpPost]
         public async Task<IActionResult> SubmitRequest(TopicRequest requestedTopic)
         {
+            var userClaims = HttpContext.User.Claims;
+
             return Ok();
         }
     }
