@@ -8,7 +8,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using stutor_core.Database;
 using stutor_core.Models;
+using stutor_core.Models.Sql;
+using stutor_core.Services;
 
 namespace stutor_core.Controllers
 {
@@ -17,9 +20,13 @@ namespace stutor_core.Controllers
     public class ExpertController : Controller
     {
         private IHostingEnvironment _environment;
+        private ExpertService _expertService;
+        private ApplicationDbContext _db;
 
-        public ExpertController(IHostingEnvironment environment)
+        public ExpertController(IHostingEnvironment environment, ApplicationDbContext db)
         {
+            _db = db;
+            _expertService = new ExpertService(_db);
             _environment = environment;
         }
 
@@ -54,5 +61,30 @@ namespace stutor_core.Controllers
         {
             return Json(new { status = 9000 });
         }
+
+        [HttpPost]
+        public Timezone ExpertTimezone([FromBody] string userId)
+        {
+            return new TimezoneService(_db).GetByUserId(userId);
+        }
+
+        [HttpPost]
+        public IEnumerable<Topic> TopicsByUserId([FromBody] string userId)
+        {
+            return _expertService.GetExpertTopicsByUserId(userId);
+        }
+
+        [HttpPost]
+        public IEnumerable<Order> OrdersByUserId([FromBody] string userId)
+        {
+            OrderService orderService = new OrderService(_db);
+            return orderService.GetExpertOrdersByUserId(userId);
+        }
+
+        [HttpPost]
+        public IEnumerable<TopicExpert> TopicExpertsByTopicId([FromBody] SelectedTopicVM vm)
+        {
+            return _expertService.GetTopicExpertsByTopicId(vm.TopicId);
+        } 
     }
 }

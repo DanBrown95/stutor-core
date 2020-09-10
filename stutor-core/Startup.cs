@@ -1,21 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Okta.AspNetCore;
 using Stripe;
 using stutor_core.Services;
 using stutor_core.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using stutor_core.Configurations;
+using stutor_core.Database;
+using Microsoft.EntityFrameworkCore;
+using GraphiQl;
 
 namespace stutor_core
 {
@@ -59,10 +55,18 @@ namespace stutor_core
 
             // ... the rest of ConfigureServices
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc().AddJsonOptions(
+                options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+            );
             services.AddMvc();
             
             //Dependency injection code
             services.AddTransient<IEmailService, EmailService>();
+
+            // Adding entity framework and sql connection
+            services.AddEntityFrameworkSqlServer()
+                .AddDbContext<ApplicationDbContext>
+            (option => option.UseSqlServer(Configuration["Database:connection"]));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -84,6 +88,7 @@ namespace stutor_core
             app.UseCors(MyAllowSpecificOrigins);
             app.UseHttpsRedirection();
             app.UseAuthentication();
+            app.UseGraphiQl("/graphql");
             app.UseMvc();
         }
     }
