@@ -18,6 +18,7 @@ namespace stutor_core.Models.Sql
         public int CallLength { get; set; }
         public int? Rating { get; set; }
         public string AdditionalInfo { get; set; }
+        public string PaymentIntentId { get; set; }
 
 
         public virtual OrderPasskey OrderPasskey { get; set; }

@@ -7,7 +7,6 @@ using Okta.AspNetCore;
 using Stripe;
 using stutor_core.Services;
 using stutor_core.Services.Interfaces;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using stutor_core.Configurations;
 using stutor_core.Database;
 using Microsoft.EntityFrameworkCore;

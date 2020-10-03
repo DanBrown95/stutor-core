@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using stutor_core.Database;
 using stutor_core.Models;
 using stutor_core.Models.Sql;
+using stutor_core.Repositories;
 using stutor_core.Services;
 
 namespace stutor_core.Controllers
@@ -19,47 +20,55 @@ namespace stutor_core.Controllers
     [ApiController]
     public class ExpertController : Controller
     {
-        private IHostingEnvironment _environment;
         private ExpertService _expertService;
         private ApplicationDbContext _db;
 
-        public ExpertController(IHostingEnvironment environment, ApplicationDbContext db)
+        public ExpertController(ApplicationDbContext db)
         {
             _db = db;
             _expertService = new ExpertService(_db);
-            _environment = environment;
         }
 
         [HttpPost]
-        public async Task<JsonResult> UploadDocuments(IFormCollection formData)
+        public async Task<JsonResult> UploadDocuments(IFormCollection documents)
         {
-            string wwwPath = _environment.WebRootPath;
-            string contentPath = _environment.ContentRootPath;
-
-            string path = Path.Combine(_environment.ContentRootPath, "Uploads");
-            if (!Directory.Exists(path))
+            if(documents.Files.Count < 1)
             {
-                Directory.CreateDirectory(path);
+                return Json(new { status = 400 });
             }
 
-            List<string> uploadedFiles = new List<string>();
-            foreach (var file in formData.Files)
-            {
-                if (file.Length > 0)
-                {
-                    using (var filestream = new FileStream(Path.Combine(path, file.FileName), FileMode.Create))
-                    {
-                        await file.CopyToAsync(filestream);
-                    }
-                }
-            }
-            return Json(new { status = 9000 });
+            var googleCloudRepo = new GoogleCloudRepository();
+            await googleCloudRepo.UploadToBucketAsync(documents);
+
+            return Json(new { status = 200 });
         }
 
         [HttpPost]
-        public async Task<JsonResult> Register(ExpertRegistration formData)
+        public int Register(ExpertRegistrationVM formData)
         {
-            return Json(new { status = 9000 });
+            var application = new ExpertApplication{
+                UserId = formData.UserId,
+                TopicId = formData.TopicId,
+                TimezoneId = formData.TimezoneId,
+                WebsiteUrl = formData.WebsiteUrl,
+                LinkedinUrl = formData.LinkedinUrl,
+                Certifications = formData.Certifications,
+                YearsOfExperience = formData.YearsOfExperience,
+                Notes = formData.Notes
+            };
+
+            var availability = "days=[\"" + string.Join("\",\"", formData.SelectedDays) + "\"];";
+            if (formData.WeekdayHours != "null-null")
+            {
+                availability += "weekdayHours=" + formData.WeekdayHours + ";";
+            }
+            if(formData.WeekendHours != "null-null")
+            {
+                availability += "weekendHours=" + formData.WeekendHours + ";";
+            }
+
+            application.Availability = availability.Remove(availability.Length -1, 1);
+            return _expertService.Register(application);
         }
 
         [HttpPost]
@@ -82,9 +91,21 @@ namespace stutor_core.Controllers
         }
 
         [HttpPost]
-        public IEnumerable<TopicExpert> TopicExpertsByTopicId([FromBody] SelectedTopicVM vm)
+        public TopicExpertsReturnVM TopicExpertsByTopicId([FromBody] SelectedTopicVM vm)
         {
-            return _expertService.GetTopicExpertsByTopicId(vm.TopicId);
-        } 
+            return _expertService.GetTopicExpertsByTopicId(vm);
+        }
+        
+        [HttpPost]
+        public bool IsActive([FromBody] string userId)
+        {
+            return _expertService.IsActive(userId);
+        }
+
+        [HttpPost]
+        public bool ToggleIsActive([FromBody] ToggleActive vm)
+        {
+            return _expertService.ToggleIsActive(vm.UserId, vm.IsActive);
+        }
     }
 }

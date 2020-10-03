@@ -5,6 +5,7 @@ namespace stutor_core.Services.Interfaces
 {
     public interface IEmailService
     {
-        Task SendEmail(ContactForm details);
+        void SendContactUsEmail(ContactForm details);
+        void SendPasskeyEmail(PasskeyEmail emailSettings);
     }
 }

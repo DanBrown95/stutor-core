@@ -23,11 +23,9 @@ namespace stutor_core.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> SubmitRequest(TopicRequest requestedTopic)
+        public int SubmitRequest(TopicRequest requestedTopic)
         {
-            var userClaims = HttpContext.User.Claims;
-
-            return Ok();
+            return _topicService.SubmitTopicRequest(requestedTopic);
         }
         
         [HttpPost]
@@ -40,6 +38,12 @@ namespace stutor_core.Controllers
         public Topic Get([FromBody] int topicId)
         {
             return _topicService.Get(topicId);
+        }
+
+        [HttpPost]
+        public IEnumerable<Topic> GetBySubstring([FromBody] string substring)
+        {
+            return _topicService.GetTopicsBySubstring(substring);
         }
     }
 }

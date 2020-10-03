@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using stutor_core.Database;
 using stutor_core.Models.Sql;
+using stutor_core.Utilities;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -15,12 +16,6 @@ namespace stutor_core.Repositories
             _context = context;
         }
 
-        public void Add(Order order)
-        {
-            _context.Add(order);
-            _context.SaveChanges();
-        }
-
         public Order Get(int ID)
         {
             return _context.Order.FirstOrDefault(e => e.Id == ID);
@@ -28,7 +23,12 @@ namespace stutor_core.Repositories
 
         public IEnumerable<Order> GetAllByUserId(string userId)
         {
-            return _context.Order.Where(o => o.UserId == userId).Include(o => o.OrderPasskey).Include(x => x.Topic);
+            var result = from o in _context.Order
+
+                         where o.UserId == userId
+
+                         select new Order() { Id = o.Id, Submitted = o.Submitted, Status = o.Status, Charge = o.Charge, Topic = o.Topic, ExpertId = o.ExpertId, Rating = o.Rating, AdditionalInfo = o.AdditionalInfo };
+            return result;
         }
 
         public OrderPasskey GetOrderPasskey(int orderId)
@@ -38,15 +38,54 @@ namespace stutor_core.Repositories
 
         public IEnumerable<Order> GetExpertOrdersByUserId(string userId)
         {
-            return _context.Order.Where(o => o.ExpertId == o.Expert.Id && o.Expert.UserId == userId).Include(x => x.Topic);
+            var result = from o in _context.Order
+
+                         where o.ExpertId == o.Expert.Id && o.Expert.UserId == userId
+
+                         select new Order() { Id = o.Id, Submitted = o.Submitted, Status = o.Status, CallLength = o.CallLength, Charge = o.Charge, Topic = o.Topic };
+            
+            return result;
         }
 
-        public int updateFeedback(Order incomingOrder)
+        public int UpdateFeedback(Order incomingOrder)
         {
             Order old = _context.Order.First(o => o.Id == incomingOrder.Id);
             old.Rating = incomingOrder.Rating;
             old.AdditionalInfo = incomingOrder.AdditionalInfo;
             return _context.SaveChanges();
+        }
+
+        /// <param name="order"></param>
+        /// <returns name="Id">The Id of the newly inserted order</returns>
+        public int Create(Order order)
+        {
+            _context.Add(order);
+            _context.SaveChanges();
+            return order.Id;
+        }
+
+        /// <param name="orderPasskey"></param>
+        /// <returns name="Id">The Id of the newly inserted orderPasskey</returns>
+        public int CreateOrderPasskey(OrderPasskey orderPasskey)
+        {
+            _context.OrderPasskey.Add(orderPasskey);
+            _context.SaveChanges();
+            return orderPasskey.Id;
+        }
+
+        public int AuthenticatePasskey(int orderId, string incomingPasskey, string storedHash)
+        {
+            if (PasskeySecurity.Authenticate(incomingPasskey, storedHash))
+            {
+                var order = _context.Order.First(o => o.Id == orderId);
+                if(order == null)
+                {
+                    return 0;
+                }
+                order.Status = "Completed";
+                return _context.SaveChanges();
+            }
+            return 0;
         }
 
     }

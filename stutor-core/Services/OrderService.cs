@@ -24,11 +24,6 @@ namespace stutor_core.Services
             return _repo.GetAllByUserId(userId);
         }
 
-        public void Add(Order order)
-        {
-            _repo.Add(order);
-        }
-
         public OrderPasskey GetOrderPasskey(int orderId)
         {
             return _repo.GetOrderPasskey(orderId);
@@ -39,9 +34,24 @@ namespace stutor_core.Services
             return _repo.GetExpertOrdersByUserId(userId);
         }
 
-        public int updateFeedback(Order incomingOrder)
+        public int UpdateFeedback(Order incomingOrder)
         {
-            return _repo.updateFeedback(incomingOrder);
+            return _repo.UpdateFeedback(incomingOrder);
+        }
+
+        public int Create(Order order)
+        {
+            return _repo.Create(order);
+        }
+
+        public int CreateOrderPasskey(OrderPasskey orderPasskey)
+        {
+            return _repo.CreateOrderPasskey(orderPasskey);
+        }
+
+        public int AuthenticatePasskey(int orderId, string incomingPasskey, string storedHash)
+        {
+            return _repo.AuthenticatePasskey(orderId, incomingPasskey, storedHash);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using stutor_core.Database;
+using stutor_core.Models;
 using stutor_core.Models.Sql;
 using stutor_core.Repositories;
 using System.Collections.Generic;
@@ -38,6 +39,16 @@ namespace stutor_core.Services
         public IEnumerable<Topic> GetTopicsByCategory(int categoryId)
         {
             return _repo.GetTopicsByCategory(categoryId);
+        }
+
+        public IEnumerable<Topic> GetTopicsBySubstring(string substring)
+        {
+            return _repo.GetTopicsBySubstring(substring);
+        }
+
+        public int SubmitTopicRequest(TopicRequest request)
+        {
+            return _repo.SubmitTopicRequest(request);
         }
     }
 }

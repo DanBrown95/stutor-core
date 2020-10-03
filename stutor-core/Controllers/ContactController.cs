@@ -22,7 +22,7 @@ namespace stutor_core.Controllers
         [HttpPost]
         public async Task<IActionResult> SendEmailAsync(ContactForm emailRequest)
         {
-            await _emailService.SendEmail(emailRequest);
+            _emailService.SendContactUsEmail(emailRequest);
             return Ok();
         }
     }

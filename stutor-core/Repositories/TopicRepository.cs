@@ -1,4 +1,5 @@
 ﻿using stutor_core.Database;
+using stutor_core.Models;
 using stutor_core.Models.Sql;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace stutor_core.Repositories
 
         public void Add(Topic top)
         {
-            _context.Add(top);
+            _context.Topic.Add(top);
             _context.SaveChanges();
         }
 
@@ -38,6 +39,17 @@ namespace stutor_core.Repositories
         public IEnumerable<Topic> GetTopicsByCategory(int categoryId)
         {
             return _context.Topic.ToList<Topic>().Where(t => t.CategoryId == categoryId);
+        }
+
+        public IEnumerable<Topic> GetTopicsBySubstring(string sub)
+        {
+            return _context.Topic.Where(x => x.Name.Contains(sub));
+        }
+
+        public int SubmitTopicRequest(TopicRequest request)
+        {
+            _context.TopicRequest.Add(request);
+            return _context.SaveChanges();
         }
     }
 }

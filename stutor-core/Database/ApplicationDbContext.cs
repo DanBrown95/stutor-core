@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using stutor_core.Models;
 using stutor_core.Models.Sql;
 
 namespace stutor_core.Database
@@ -16,6 +17,9 @@ namespace stutor_core.Database
         public DbSet<TopicExpert> TopicExpert { get; set; }
         public DbSet<Expert> Expert { get; set; }
         public DbSet<OrderPasskey> OrderPasskey { get; set; }
+        public DbSet<TopicRequest> TopicRequest { get; set; }
+        public DbSet<ExpertApplication> ExpertApplication { get; set; }
+        public DbSet<Dictionary> Dictionary { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
