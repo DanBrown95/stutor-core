@@ -23,6 +23,11 @@ namespace stutor_core.Repositories
            return _context.Expert.FirstOrDefault(e => e.Id == id);
         }
 
+        public decimal GetExpertPrice(string expertId)
+        {
+            return _context.Expert.Where(e => e.Id == expertId).Include(x => x.TopicExpert).FirstOrDefault().TopicExpert.Price;
+        }
+
         public IEnumerable<Topic> GetExpertTopicsByUserId(string userId)
         {
             return _context.Topic.Where(t => t.Id == t.TopicExpert.TopicId && t.TopicExpert.Expert.UserId == userId).Include(x => x.TopicExpert);
@@ -74,6 +79,13 @@ namespace stutor_core.Repositories
             var record = _context.Expert.Single(e => e.UserId == userId && e.IsActive == isActive);
             record.IsActive = !isActive;
             return (_context.SaveChanges() == 1) ? !isActive : isActive;
+        }
+
+        public bool UpdateTimezone(string userId, int timezoneId)
+        {
+            var record = _context.Expert.FirstOrDefault(x => x.UserId == userId);
+            record.TimezoneId = timezoneId;
+            return _context.SaveChanges() == 1;
         }
     }
 }

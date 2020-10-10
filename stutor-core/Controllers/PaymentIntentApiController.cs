@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Stripe;
+using stutor_core.Database;
+using stutor_core.Services;
 
 namespace stutor_core.Controllers
 {
@@ -11,13 +13,23 @@ namespace stutor_core.Controllers
     [ApiController]
     public class PaymentIntentApiController : Controller
     {
+        ApplicationDbContext _db;
+        ExpertService _expertService;
+        private readonly decimal serviceFee = 2.50M;
+
+        public PaymentIntentApiController(ApplicationDbContext db)
+        {
+            _db = db;
+            _expertService = new ExpertService(_db);
+        }
+
         [HttpPost]
-        public ActionResult Create(PaymentIntentCreateRequest request)
+        public ActionResult Create([FromBody] PaymentIntentCreateRequest purchase)
         {
             var paymentIntents = new PaymentIntentService();
             var paymentIntent = paymentIntents.Create(new PaymentIntentCreateOptions
             {
-                Amount = CalculateOrderAmount(request.Items),
+                Amount = CalculateOrderAmount(purchase.ExpertId),
                 Currency = "usd",
             });
             return Json(new { clientSecret = paymentIntent.ClientSecret });
@@ -62,22 +74,21 @@ namespace stutor_core.Controllers
                 Console.WriteLine("✅ Successfully charged card off session");
         }
 
-        private int CalculateOrderAmount(Item[] items)
+        private int CalculateOrderAmount(string expertId)
         {
             // Replace this constant with a calculation of the order's amount
             // Calculate the order total on the server to prevent
             // people from directly manipulating the amount on the client
-            return 1400;
+
+            var expertCost = _expertService.GetExpertPrice(expertId);
+            var result = Convert.ToInt32((expertCost + serviceFee) * 100);
+            return result;
         }
-        public class Item
-        {
-            [JsonProperty("id")]
-            public string Id { get; set; }
-        }
+
         public class PaymentIntentCreateRequest
         {
-            [JsonProperty("items")]
-            public Item[] Items { get; set; }
+            [JsonProperty("expertId")]
+            public string ExpertId { get; set; }
         }
     }
 }

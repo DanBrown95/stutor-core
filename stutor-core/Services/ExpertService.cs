@@ -24,6 +24,11 @@ namespace stutor_core.Services
             return _repo.Get(id);
         }
 
+        public decimal GetExpertPrice(string expertId)
+        {
+            return _repo.GetExpertPrice(expertId);
+        }
+
         public IEnumerable<Topic> GetExpertTopicsByUserId(string userId)
         {
             return _repo.GetExpertTopicsByUserId(userId);
@@ -52,6 +57,11 @@ namespace stutor_core.Services
         public int Register(ExpertApplication application)
         {
             return _repo.Register(application);
+        }
+
+        public bool UpdateTimezone(string userId, int timezoneId)
+        {
+            return _repo.UpdateTimezone(userId, timezoneId);
         }
     }
 }

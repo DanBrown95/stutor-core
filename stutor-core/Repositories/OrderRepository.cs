@@ -42,7 +42,7 @@ namespace stutor_core.Repositories
 
                          where o.ExpertId == o.Expert.Id && o.Expert.UserId == userId
 
-                         select new Order() { Id = o.Id, Submitted = o.Submitted, Status = o.Status, CallLength = o.CallLength, Charge = o.Charge, Topic = o.Topic };
+                         select new Order() { Id = o.Id, Submitted = o.Submitted, Status = o.Status, CallLength = o.CallLength, Price = o.Price, Topic = o.Topic };
             
             return result;
         }

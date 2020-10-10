@@ -27,6 +27,7 @@ namespace stutor_core.Controllers
         private readonly IEmailService _emailService;
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly SMSSettings _smsSettings;
+        private readonly decimal serviceFee = 2.50M;
 
         public OrderController(ApplicationDbContext db, IEmailService emailService, IHostingEnvironment hostingEnvironment, SMSSettings smsSettings)
         {
@@ -41,6 +42,7 @@ namespace stutor_core.Controllers
         public int SubmitIntent([FromBody] SubmitIntentVM vm)
         {
             vm.Status = "Unanswered";
+            vm.Charge = vm.Price + serviceFee;
             var orderId = _repo.Create(vm);
             // need to store the order, then use the id to create the OrderPasskey object in the db
             if (orderId > 0)
@@ -65,7 +67,7 @@ namespace stutor_core.Controllers
                     var escapedRightBrace = escapedLeftBrace.Replace("}", "}}");
                     var addedLeftFormatPlaceholder = escapedRightBrace.Replace("&#9001;", "{");
                     var addedRightFormatPlaceholder = addedLeftFormatPlaceholder.Replace("&#9002;", "}");
-                    var email = String.Format(addedRightFormatPlaceholder, vm.FriendlySubmitted, unhashed, vm.TopicName, vm.Charge, vm.Charge, orderId.ToString());
+                    var email = String.Format(addedRightFormatPlaceholder, vm.FriendlySubmitted, unhashed, vm.TopicName, vm.Price, serviceFee, vm.Charge, orderId.ToString());
                     
                     //Send the email
                     var mailTemplate = new PasskeyEmail() { Email = vm.UserEmail, Subject = "Stutor order confirmation passkey" };

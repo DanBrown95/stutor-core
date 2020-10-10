@@ -12,7 +12,16 @@ namespace stutor_core.Models.Sql
         public int TopicId { get; set; }
         public string ExpertId { get; set; }
         public string UserId { get; set; }
+        
+        /// <summary>
+        /// The amount charged to the customers card 
+        /// </summary>
         public decimal Charge { get; set; }
+
+        /// <summary>
+        /// The price of the expert
+        /// </summary>
+        public decimal Price { get; set; }
         public string Status { get; set; }
         public DateTime Submitted { get; set; }
         public int CallLength { get; set; }

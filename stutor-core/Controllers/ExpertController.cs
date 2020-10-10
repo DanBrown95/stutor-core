@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using stutor_core.Database;
 using stutor_core.Models;
 using stutor_core.Models.Sql;
+using stutor_core.Models.ViewModels;
 using stutor_core.Repositories;
 using stutor_core.Services;
 
@@ -106,6 +107,12 @@ namespace stutor_core.Controllers
         public bool ToggleIsActive([FromBody] ToggleActive vm)
         {
             return _expertService.ToggleIsActive(vm.UserId, vm.IsActive);
+        }
+
+        [HttpPost]
+        public bool UpdateTimezone([FromBody] UpdateTimezone vm)
+        {
+            return _expertService.UpdateTimezone(vm.UserId, vm.TimezoneId);
         }
     }
 }
