@@ -1,11 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace stutor_core.Models
+namespace stutor_core.Models.ViewModels
 {
     public class ExpertRegistrationVM
     {
-        public string UserId { get; set; }
+        public string UserEmail { get; set; }
 
         public int TopicId { get; set; }
         

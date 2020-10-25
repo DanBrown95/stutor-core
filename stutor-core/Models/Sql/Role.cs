@@ -3,13 +3,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace stutor_core.Models.Sql
 {
-    [Table("Dictionary")]
-    public class Dictionary
+    [Table("Role")]
+    public class Role
     {
         [Key, Required]
         public int Id { get; set; }
 
-        [Required, MaxLength(20)]
-        public string Word { get; set; }
+        [Required, MaxLength(15)]
+        public string Name { get; set; }
     }
 }

@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
+using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
 using stutor_core.Configurations;
 using stutor_core.Database;
 using stutor_core.Models;
 using stutor_core.Models.Sql;
+using stutor_core.Models.ViewModels;
 using stutor_core.Repositories;
 using stutor_core.Services;
 using stutor_core.Services.Controllers;
@@ -27,6 +28,7 @@ namespace stutor_core.Controllers
         private readonly IEmailService _emailService;
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly SMSSettings _smsSettings;
+        private readonly ExpertService _expertService;
         private readonly decimal serviceFee = 2.50M;
 
         public OrderController(ApplicationDbContext db, IEmailService emailService, IHostingEnvironment hostingEnvironment, SMSSettings smsSettings)
@@ -36,6 +38,7 @@ namespace stutor_core.Controllers
             _emailService = emailService;
             _smsSettings = smsSettings;
             _hostingEnvironment = hostingEnvironment;
+            _expertService = new ExpertService(_db);
         }
 
         [HttpPost]
@@ -74,10 +77,14 @@ namespace stutor_core.Controllers
                     mailTemplate.Body = email;
                     _emailService.SendPasskeyEmail(mailTemplate);
 
-                    //Send the confirmation text message
+                    //Send the confirmation text message to the user
                     var smsService = new SmsService(_smsSettings);
-                    smsService.SendConfirmation(orderId, unhashed, vm.UserPhone);
-                    //smsService.SendClientNumber(vm.UserPhone, ?? , vm.TopicName);
+                    var userPhone = _db.User.FirstOrDefault(u => u.Email == vm.UserEmail).Phone;
+                    smsService.SendConfirmation(orderId, unhashed, userPhone);
+
+                    //Send the text message to the expert
+                    var expertPhone = _expertService.GetPhoneById(vm.ExpertId);
+                    smsService.SendClientNumber(vm.UserPhone, expertPhone, vm.TopicName);
                     return 1;
                 }
 
@@ -112,9 +119,9 @@ namespace stutor_core.Controllers
         }
 
         [HttpPost]
-        public IEnumerable<Order> GetAllByUserId([FromBody] string userId)
+        public IEnumerable<Order> GetAllByUserEmail([FromBody] string userEmail)
         {   
-            return _repo.GetAllByUserId(userId);
+            return _repo.GetAllByUserEmail(userEmail);
         }
     }
 }

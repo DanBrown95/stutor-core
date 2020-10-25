@@ -29,7 +29,7 @@ namespace stutor_core.Controllers
             var paymentIntents = new PaymentIntentService();
             var paymentIntent = paymentIntents.Create(new PaymentIntentCreateOptions
             {
-                Amount = CalculateOrderAmount(purchase.ExpertId),
+                Amount = CalculateOrderAmount(purchase.ExpertId, purchase.TopicId),
                 Currency = "usd",
             });
             return Json(new { clientSecret = paymentIntent.ClientSecret });
@@ -74,13 +74,13 @@ namespace stutor_core.Controllers
                 Console.WriteLine("✅ Successfully charged card off session");
         }
 
-        private int CalculateOrderAmount(string expertId)
+        private int CalculateOrderAmount(string expertId, int topicId)
         {
             // Replace this constant with a calculation of the order's amount
             // Calculate the order total on the server to prevent
             // people from directly manipulating the amount on the client
 
-            var expertCost = _expertService.GetExpertPrice(expertId);
+            var expertCost = _expertService.GetExpertPrice(expertId, topicId);
             var result = Convert.ToInt32((expertCost + serviceFee) * 100);
             return result;
         }
@@ -89,6 +89,8 @@ namespace stutor_core.Controllers
         {
             [JsonProperty("expertId")]
             public string ExpertId { get; set; }
+            [JsonProperty("topicId")]
+            public int TopicId { get; set; }
         }
     }
 }

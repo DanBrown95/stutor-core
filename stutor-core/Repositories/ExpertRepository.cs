@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using stutor_core.Database;
-using stutor_core.Models;
 using stutor_core.Models.Sql;
+using stutor_core.Models.ViewModels;
 using stutor_core.Utilities;
 using System;
 using System.Collections.Generic;
@@ -23,19 +23,19 @@ namespace stutor_core.Repositories
            return _context.Expert.FirstOrDefault(e => e.Id == id);
         }
 
-        public decimal GetExpertPrice(string expertId)
+        public decimal GetExpertPrice(string expertId, int topicId)
         {
-            return _context.Expert.Where(e => e.Id == expertId).Include(x => x.TopicExpert).FirstOrDefault().TopicExpert.Price;
+            return _context.Expert.Where(e => e.Id == expertId).Include(x => x.TopicExpert).FirstOrDefault().TopicExpert.FirstOrDefault(t => t.TopicId == topicId).Price;
         }
 
-        public IEnumerable<Topic> GetExpertTopicsByUserId(string userId)
+        public IEnumerable<Topic> GetExpertTopicsByUserEmail(string userEmail)
         {
-            return _context.Topic.Where(t => t.Id == t.TopicExpert.TopicId && t.TopicExpert.Expert.UserId == userId).Include(x => x.TopicExpert);
+            return _context.Topic.Where(t => t.Id == t.TopicExpert.TopicId && t.TopicExpert.Expert.UserEmail == userEmail).Include(x => x.TopicExpert);
         }
 
-        public IEnumerable<Order> GetExpertOrdersByUserId(string userId)
+        public IEnumerable<Order> GetExpertOrdersByUserEmail(string userEmail)
         {
-            return _context.Order.Where(o => o.ExpertId == o.Expert.Id && o.Expert.UserId == userId).Include(x => x.Topic);
+            return _context.Order.Where(o => o.ExpertId == o.Expert.Id && o.Expert.UserEmail == userEmail).Include(x => x.Topic);
         }
 
         public TopicExpertsReturnVM GetTopicExpertsByTopicId(SelectedTopicVM selectedTopicVm)
@@ -69,23 +69,28 @@ namespace stutor_core.Repositories
             return id;
         }
 
-        public bool IsActive(string userId)
+        public bool IsActive(string userEmail)
         {
-            return _context.Expert.Single(x => x.UserId == userId).IsActive;
+            return _context.Expert.Single(x => x.UserEmail == userEmail).IsActive;
         }
 
-        public bool ToggleIsActive(string userId, bool isActive)
+        public bool ToggleIsActive(string userEmail, bool isActive)
         {
-            var record = _context.Expert.Single(e => e.UserId == userId && e.IsActive == isActive);
+            var record = _context.Expert.Single(e => e.UserEmail == userEmail && e.IsActive == isActive);
             record.IsActive = !isActive;
             return (_context.SaveChanges() == 1) ? !isActive : isActive;
         }
 
-        public bool UpdateTimezone(string userId, int timezoneId)
+        public bool UpdateTimezone(string userEmail, int timezoneId)
         {
-            var record = _context.Expert.FirstOrDefault(x => x.UserId == userId);
+            var record = _context.Expert.FirstOrDefault(x => x.UserEmail == userEmail);
             record.TimezoneId = timezoneId;
             return _context.SaveChanges() == 1;
+        }
+
+        public string GetPhoneById(string expertId)
+        {
+            return _context.User.FirstOrDefault(x => x.Expert.Id == expertId).Phone;
         }
     }
 }

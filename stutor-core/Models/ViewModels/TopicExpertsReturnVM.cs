@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using stutor_core.Models.Sql;
 
-namespace stutor_core.Models
+namespace stutor_core.Models.ViewModels
 {
     public class TopicExpertsReturnVM
     {

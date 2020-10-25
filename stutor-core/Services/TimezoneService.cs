@@ -29,9 +29,9 @@ namespace stutor_core.Services
             _repo.Add(timezone);
         }
 
-        public Timezone GetByUserId(string id)
+        public Timezone GetByUserEmail(string id)
         {
-            return _repo.GetByUserId(id);
+            return _repo.GetByUserEmail(id);
         }
     }
 }

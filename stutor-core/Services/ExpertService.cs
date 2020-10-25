@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using System.Collections.Generic;
 using stutor_core.Database;
-using stutor_core.Models;
 using stutor_core.Models.Sql;
+using stutor_core.Models.ViewModels;
 using stutor_core.Repositories;
 
 namespace stutor_core.Services
@@ -24,19 +20,19 @@ namespace stutor_core.Services
             return _repo.Get(id);
         }
 
-        public decimal GetExpertPrice(string expertId)
+        public decimal GetExpertPrice(string expertId, int topicId)
         {
-            return _repo.GetExpertPrice(expertId);
+            return _repo.GetExpertPrice(expertId, topicId);
         }
 
-        public IEnumerable<Topic> GetExpertTopicsByUserId(string userId)
+        public IEnumerable<Topic> GetExpertTopicsByUserEmail(string userEmail)
         {
-            return _repo.GetExpertTopicsByUserId(userId);
+            return _repo.GetExpertTopicsByUserEmail(userEmail);
         }
 
-        public IEnumerable<Order> GetExpertOrdersByUserId(string userId)
+        public IEnumerable<Order> GetExpertOrdersByUserEmail(string userEmail)
         {
-            return _repo.GetExpertOrdersByUserId(userId);
+            return _repo.GetExpertOrdersByUserEmail(userEmail);
         }
 
         public TopicExpertsReturnVM GetTopicExpertsByTopicId(SelectedTopicVM selectedTopicVm)
@@ -44,14 +40,14 @@ namespace stutor_core.Services
             return _repo.GetTopicExpertsByTopicId(selectedTopicVm);
         }
 
-        public bool IsActive(string userId)
+        public bool IsActive(string userEmail)
         {
-            return _repo.IsActive(userId);
+            return _repo.IsActive(userEmail);
         }
 
-        public bool ToggleIsActive(string userId, bool isActive)
+        public bool ToggleIsActive(string userEmail, bool isActive)
         {
-            return _repo.ToggleIsActive(userId, isActive);
+            return _repo.ToggleIsActive(userEmail, isActive);
         }
 
         public int Register(ExpertApplication application)
@@ -59,9 +55,14 @@ namespace stutor_core.Services
             return _repo.Register(application);
         }
 
-        public bool UpdateTimezone(string userId, int timezoneId)
+        public bool UpdateTimezone(string userEmail, int timezoneId)
         {
-            return _repo.UpdateTimezone(userId, timezoneId);
+            return _repo.UpdateTimezone(userEmail, timezoneId);
+        }
+
+        public string GetPhoneById(string expertId)
+        {
+            return _repo.GetPhoneById(expertId);
         }
     }
 }

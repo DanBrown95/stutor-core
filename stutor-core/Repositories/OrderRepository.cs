@@ -21,11 +21,11 @@ namespace stutor_core.Repositories
             return _context.Order.FirstOrDefault(e => e.Id == ID);
         }
 
-        public IEnumerable<Order> GetAllByUserId(string userId)
+        public IEnumerable<Order> GetAllByUserEmail(string userEmail)
         {
             var result = from o in _context.Order
 
-                         where o.UserId == userId
+                         where o.UserEmail == userEmail
 
                          select new Order() { Id = o.Id, Submitted = o.Submitted, Status = o.Status, Charge = o.Charge, Topic = o.Topic, ExpertId = o.ExpertId, Rating = o.Rating, AdditionalInfo = o.AdditionalInfo };
             return result;
@@ -36,11 +36,11 @@ namespace stutor_core.Repositories
             return _context.OrderPasskey.FirstOrDefault(e => e.OrderId == orderId);
         }
 
-        public IEnumerable<Order> GetExpertOrdersByUserId(string userId)
+        public IEnumerable<Order> GetExpertOrdersByUserEmail(string userEmail)
         {
             var result = from o in _context.Order
 
-                         where o.ExpertId == o.Expert.Id && o.Expert.UserId == userId
+                         where o.ExpertId == o.Expert.Id && o.Expert.UserEmail == userEmail
 
                          select new Order() { Id = o.Id, Submitted = o.Submitted, Status = o.Status, CallLength = o.CallLength, Price = o.Price, Topic = o.Topic };
             

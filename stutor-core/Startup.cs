@@ -3,14 +3,13 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Okta.AspNetCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Stripe;
 using stutor_core.Services;
 using stutor_core.Services.Interfaces;
 using stutor_core.Configurations;
 using stutor_core.Database;
 using Microsoft.EntityFrameworkCore;
-using GraphiQl;
 
 namespace stutor_core
 {
@@ -37,15 +36,15 @@ namespace stutor_core
                     });
             });
 
+            string domain = $"https://{Configuration["Auth0:domain"]}/"; // For authorizing with auth0 access tokens
             services.AddAuthentication(options =>
             {
-                options.DefaultAuthenticateScheme = OktaDefaults.ApiAuthenticationScheme;
-                options.DefaultChallengeScheme = OktaDefaults.ApiAuthenticationScheme;
-                options.DefaultSignInScheme = OktaDefaults.ApiAuthenticationScheme;
-            })
-            .AddOktaWebApi(new OktaWebApiOptions()
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
             {
-                OktaDomain = "https://dev-870310.okta.com"
+                options.Authority = domain;
+                options.Audience = Configuration["Auth0:audience"];
             });
 
             SMSSettings smsSettings = new SMSSettings();
@@ -62,17 +61,19 @@ namespace stutor_core
             //Dependency injection code
             services.AddTransient<IEmailService, EmailService>();
 
+            var connection = Configuration["Database:amazonRDS"];
+
             // Adding entity framework and sql connection
             services.AddEntityFrameworkSqlServer()
                 .AddDbContext<ApplicationDbContext>
-            (option => option.UseSqlServer(Configuration["Database:connection"]));
+            (option => option.UseSqlServer(connection));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             // This is your real test secret API key.
-            StripeConfiguration.ApiKey = "sk_test_622paREJpij1vZUp46UCQQ280043PjyrRF";
+            StripeConfiguration.ApiKey = Configuration["Stripe:testApiKey"];
 
             if (env.IsDevelopment())
             {
@@ -87,7 +88,6 @@ namespace stutor_core
             app.UseCors(MyAllowSpecificOrigins);
             app.UseHttpsRedirection();
             app.UseAuthentication();
-            app.UseGraphiQl("/graphql");
             app.UseMvc();
         }
     }

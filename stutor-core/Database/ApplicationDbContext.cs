@@ -20,11 +20,18 @@ namespace stutor_core.Database
         public DbSet<TopicRequest> TopicRequest { get; set; }
         public DbSet<ExpertApplication> ExpertApplication { get; set; }
         public DbSet<Dictionary> Dictionary { get; set; }
+        public DbSet<User> User { get; set; }
+        public DbSet<Role> Role { get; set; }
+        public DbSet<UserRole> UserRole { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<TopicExpert>()
                 .HasKey(e => new { e.TopicId, e.ExpertId });
+
+            modelBuilder.Entity<User>().HasKey(e => e.Email);
+            modelBuilder.Entity<User>().HasOne(e => e.Expert).WithOne(u => u.User).HasForeignKey<Expert>(e => e.UserEmail);
+
         }
     }
 }

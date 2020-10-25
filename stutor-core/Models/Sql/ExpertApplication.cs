@@ -1,19 +1,25 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace stutor_core.Models.Sql
 {
+    [Table("ExpertApplication")]
     public class ExpertApplication
     {
 
+        [Key, Required]
         public int Id { get; set; }
 
-        public string UserId { get; set; }
+        [Required, ForeignKey(nameof(User))]
+        public string UserEmail { get; set; }
 
+        [Required, ForeignKey(nameof(Topic))]
         public int TopicId { get; set; }
 
-        [MaxLength(200)]
+        [Required, MaxLength(200)]
         public string Availability { get; set; }
 
+        [Required, ForeignKey(nameof(Timezone))]
         public int? TimezoneId { get; set; }
 
         [MaxLength(200)]
@@ -28,6 +34,17 @@ namespace stutor_core.Models.Sql
         [MaxLength(500)]
         public string Notes { get; set; }
 
+        [Required]
         public int YearsOfExperience { get; set; }
+
+
+        #region Foreign key mappings
+
+        public virtual User User { get; set; }
+        public virtual Timezone MyProperty { get; set; }
+        public virtual Expert Expert { get; set; }
+
+        #endregion
+
     }
 }

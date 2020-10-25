@@ -7,7 +7,7 @@ namespace stutor_core.Models
 {
     public class ToggleActive
     {
-        public string UserId { get; set; }
+        public string UserEmail { get; set; }
         public bool IsActive { get; set; }
     }
 }

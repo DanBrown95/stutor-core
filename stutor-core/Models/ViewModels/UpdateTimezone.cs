@@ -2,7 +2,7 @@
 {
     public class UpdateTimezone
     {
-        public string UserId { get; set; }
+        public string UserEmail { get; set; }
         public int TimezoneId { get; set; }
     }
 }
