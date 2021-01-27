@@ -59,6 +59,11 @@ namespace stutor_core.Repositories
         /// <returns name="Id">The Id of the newly inserted order</returns>
         public int Create(Order order)
         {
+            var expert = _context.TopicExpert.Where(x => x.ExpertId == order.ExpertId && x.TopicId == order.TopicId).First();
+            if(order.Price != expert.Price) // ensure the price passed from the view is not tampered with and accurate.
+            {
+                return 0;
+            }
             _context.Add(order);
             _context.SaveChanges();
             return order.Id;

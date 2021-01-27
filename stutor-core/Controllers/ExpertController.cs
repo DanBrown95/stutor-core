@@ -58,17 +58,18 @@ namespace stutor_core.Controllers
                 Notes = formData.Notes
             };
 
-            var availability = "days=[\"" + string.Join("\",\"", formData.SelectedDays) + "\"];";
+            var availability = "{\"days\":[\"" + string.Join("\",\"", formData.SelectedDays) + "\"]";
             if (formData.WeekdayHours != "null-null")
             {
-                availability += "weekdayHours=" + formData.WeekdayHours + ";";
+                availability += ",\"weekdayHours\":\"" + formData.WeekdayHours + "\"";
             }
             if(formData.WeekendHours != "null-null")
             {
-                availability += "weekendHours=" + formData.WeekendHours + ";";
+                availability += ",\"weekendHours\":\"" + formData.WeekendHours + "\"";
             }
+            availability += "}";
 
-            application.Availability = availability.Remove(availability.Length -1, 1);
+            application.Availability = availability;//availability.Remove(availability.Length -1, 1);
             return _expertService.Register(application);
         }
 

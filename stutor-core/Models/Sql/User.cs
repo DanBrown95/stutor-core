@@ -28,10 +28,16 @@ namespace stutor_core.Models.Sql
         public string Lastname { get; set; }
 
         [Required]
-        public bool IsActive { get; set; }
+        public bool Email_Verified { get; set; }
 
         [Required]
-        public bool IsBanned { get; set; }
+        public bool Phone_Verified { get; set; }
+
+        [Required]
+        public bool Is_Active { get; set; }
+
+        [Required]
+        public bool Is_Banned { get; set; }
 
         [Required]
         public DateTime? Created { get; set; }

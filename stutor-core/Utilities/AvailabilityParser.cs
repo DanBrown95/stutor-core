@@ -1,4 +1,5 @@
-﻿using NodaTime;
+﻿using Newtonsoft.Json;
+using NodaTime;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -12,23 +13,17 @@ namespace stutor_core.Utilities
         public static bool IsAvailable(string availability, string expertTzName)
         {
             var result = false;
-            var partitions = availability.Split(';');
 
-            var dictionary = new Dictionary<string,string>();
-            foreach (var x in partitions)
-            {
-                var y = x.Split("=");
-                dictionary[y[0]] = y[1];
-            }
+            var parsed = JsonConvert.DeserializeObject<AvailablityDisplay>(availability);
 
             TimeZoneInfo tzi = TZConvert.GetTimeZoneInfo(expertTzName);
             var expertDateTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById(tzi.Id));
 
             var currentDayForExpert = expertDateTime.DayOfWeek.ToString().Substring(0,3).ToLower();
-            if (dictionary["days"].Contains(currentDayForExpert))
+            if (parsed.Days.Contains(currentDayForExpert))
             {
                 string keyToCheck = (currentDayForExpert == "sat" || currentDayForExpert == "sun") ? "weekendHours" : "weekdayHours";
-                var hours = dictionary[keyToCheck].Split('-');
+                var hours = (keyToCheck == "weekdayHours") ? parsed.WeekdayHours.Split('-') : parsed.WeekendHours.Split("-");
                 var start = DateTime.Parse(hours[0]);
                 var end = DateTime.Parse(hours[1]);
                 if(expertDateTime.TimeOfDay == start.TimeOfDay || (expertDateTime.TimeOfDay > start.TimeOfDay && expertDateTime.TimeOfDay < end.TimeOfDay))
@@ -39,5 +34,12 @@ namespace stutor_core.Utilities
 
             return result;
         }
+    }
+
+    public class AvailablityDisplay
+    {
+        public List<string> Days { get; set; }
+        public string WeekdayHours { get; set; }
+        public string WeekendHours { get; set; }
     }
 }

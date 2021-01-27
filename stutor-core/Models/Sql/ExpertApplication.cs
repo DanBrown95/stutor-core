@@ -41,8 +41,6 @@ namespace stutor_core.Models.Sql
         #region Foreign key mappings
 
         public virtual User User { get; set; }
-        public virtual Timezone MyProperty { get; set; }
-        public virtual Expert Expert { get; set; }
 
         #endregion
 
