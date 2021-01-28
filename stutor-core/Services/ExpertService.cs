@@ -25,14 +25,14 @@ namespace stutor_core.Services
             return _repo.GetExpertPrice(expertId, topicId);
         }
 
-        public IEnumerable<Topic> GetExpertTopicsByUserEmail(string userEmail)
+        public IEnumerable<Topic> GetExpertTopicsByUserId(string userId)
         {
-            return _repo.GetExpertTopicsByUserEmail(userEmail);
+            return _repo.GetExpertTopicsByUserId(userId);
         }
 
-        public IEnumerable<Order> GetExpertOrdersByUserEmail(string userEmail)
+        public IEnumerable<Order> GetExpertOrdersByUserId(string userId)
         {
-            return _repo.GetExpertOrdersByUserEmail(userEmail);
+            return _repo.GetExpertOrdersByUserId(userId);
         }
 
         public TopicExpertsReturnVM GetTopicExpertsByTopicId(SelectedTopicVM selectedTopicVm)
@@ -40,14 +40,14 @@ namespace stutor_core.Services
             return _repo.GetTopicExpertsByTopicId(selectedTopicVm);
         }
 
-        public bool IsActive(string userEmail)
+        public bool IsActive(string userId)
         {
-            return _repo.IsActive(userEmail);
+            return _repo.IsActive(userId);
         }
 
-        public bool ToggleIsActive(string userEmail, bool isActive)
+        public bool ToggleIsActive(string userId, bool isActive)
         {
-            return _repo.ToggleIsActive(userEmail, isActive);
+            return _repo.ToggleIsActive(userId, isActive);
         }
 
         public int Register(ExpertApplication application)
@@ -55,9 +55,9 @@ namespace stutor_core.Services
             return _repo.Register(application);
         }
 
-        public bool UpdateTimezone(string userEmail, int timezoneId)
+        public bool UpdateTimezone(string userId, int timezoneId)
         {
-            return _repo.UpdateTimezone(userEmail, timezoneId);
+            return _repo.UpdateTimezone(userId, timezoneId);
         }
 
         public string GetPhoneById(string expertId)

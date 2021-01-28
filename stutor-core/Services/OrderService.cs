@@ -19,9 +19,9 @@ namespace stutor_core.Services
             return _repo.Get(id);
         }
 
-        public IEnumerable<Order> GetAllByUserEmail(string userEmail)
+        public IEnumerable<Order> GetAllByUserId(string userId)
         {
-            return _repo.GetAllByUserEmail(userEmail);
+            return _repo.GetAllByUserId(userId);
         }
 
         public OrderPasskey GetOrderPasskey(int orderId)
@@ -29,9 +29,9 @@ namespace stutor_core.Services
             return _repo.GetOrderPasskey(orderId);
         }
 
-        public IEnumerable<Order> GetExpertOrdersByUserEmail(string userEmail)
+        public IEnumerable<Order> GetExpertOrdersByUserId(string userId)
         {
-            return _repo.GetExpertOrdersByUserEmail(userEmail);
+            return _repo.GetExpertOrdersByUserId(userId);
         }
 
         public int UpdateFeedback(Order incomingOrder)

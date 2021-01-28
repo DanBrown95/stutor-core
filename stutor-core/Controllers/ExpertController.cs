@@ -48,7 +48,7 @@ namespace stutor_core.Controllers
         public int Register(ExpertRegistrationVM formData)
         {
             var application = new ExpertApplication{
-                UserEmail = formData.UserEmail,
+                UserId = formData.UserId,
                 TopicId = formData.TopicId,
                 TimezoneId = formData.TimezoneId,
                 WebsiteUrl = formData.WebsiteUrl,
@@ -74,22 +74,22 @@ namespace stutor_core.Controllers
         }
 
         [HttpPost]
-        public Timezone ExpertTimezone([FromBody] string userEmail)
+        public Timezone ExpertTimezone([FromBody] string userId)
         {
-            return new TimezoneService(_db).GetByUserEmail(userEmail);
+            return new TimezoneService(_db).GetByUserId(userId);
         }
 
         [HttpPost]
-        public IEnumerable<Topic> TopicsByUserEmail([FromBody] string userEmail)
+        public IEnumerable<Topic> TopicsByUserId([FromBody] string userId)
         {
-            return _expertService.GetExpertTopicsByUserEmail(userEmail);
+            return _expertService.GetExpertTopicsByUserId(userId);
         }
 
         [HttpPost]
-        public IEnumerable<Order> OrdersByUserEmail([FromBody] string userEmail)
+        public IEnumerable<Order> OrdersByUserId([FromBody] string userId)
         {
             OrderService orderService = new OrderService(_db);
-            return orderService.GetExpertOrdersByUserEmail(userEmail);
+            return orderService.GetExpertOrdersByUserId(userId);
         }
 
         [HttpPost]
@@ -99,21 +99,21 @@ namespace stutor_core.Controllers
         }
         
         [HttpPost]
-        public bool IsActive([FromBody] string userEmail)
+        public bool IsActive([FromBody] string userId)
         {
-            return _expertService.IsActive(userEmail);
+            return _expertService.IsActive(userId);
         }
 
         [HttpPost]
         public bool ToggleIsActive([FromBody] ToggleActive vm)
         {
-            return _expertService.ToggleIsActive(vm.UserEmail, vm.IsActive);
+            return _expertService.ToggleIsActive(vm.UserId, vm.IsActive);
         }
 
         [HttpPost]
         public bool UpdateTimezone([FromBody] UpdateTimezone vm)
         {
-            return _expertService.UpdateTimezone(vm.UserEmail, vm.TimezoneId);
+            return _expertService.UpdateTimezone(vm.UserId, vm.TimezoneId);
         }
     }
 }

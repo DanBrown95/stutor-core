@@ -8,8 +8,10 @@ namespace stutor_core.Models.Sql
     [Table("User")]
     public class User
     {
-
         [Key, Required, MaxLength(100)]
+        public string Id { get; set; }
+
+        [Required, MaxLength(100)]
         public string Email { get; set; }
 
         [Required, MaxLength(100)]

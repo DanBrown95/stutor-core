@@ -17,8 +17,8 @@ namespace stutor_core.Models.Sql
         public string ExpertId { get; set; }
 
         [ForeignKey(nameof(User))]
-        public string UserEmail { get; set; }
-        
+        public string UserId { get; set; }
+
         /// <summary>
         /// The amount charged to the customers card 
         /// </summary>

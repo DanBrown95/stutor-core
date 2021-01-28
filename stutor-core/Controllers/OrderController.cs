@@ -79,7 +79,7 @@ namespace stutor_core.Controllers
 
                     //Send the confirmation text message to the user
                     var smsService = new SmsService(_smsSettings);
-                    var userPhone = _db.User.FirstOrDefault(u => u.Email == vm.UserEmail).Phone;
+                    var userPhone = _db.User.FirstOrDefault(u => u.Id == vm.UserId).Phone;
                     smsService.SendConfirmation(orderId, unhashed, userPhone);
 
                     //Send the text message to the expert
@@ -119,9 +119,9 @@ namespace stutor_core.Controllers
         }
 
         [HttpPost]
-        public IEnumerable<Order> GetAllByUserEmail([FromBody] string userEmail)
+        public IEnumerable<Order> GetAllByUserId([FromBody] string userId)
         {   
-            return _repo.GetAllByUserEmail(userEmail);
+            return _repo.GetAllByUserId(userId);
         }
     }
 }

@@ -11,7 +11,7 @@ namespace stutor_core.Models.Sql
         public string Id { get; set; }
 
         [Required, ForeignKey(nameof(User))]
-        public string UserEmail { get; set; }
+        public string UserId { get; set; }
 
         [Required, ForeignKey(nameof(Timezone))]
         public int TimezoneId { get; set; }

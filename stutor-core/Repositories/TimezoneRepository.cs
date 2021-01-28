@@ -32,9 +32,9 @@ namespace stutor_core.Repositories
             return _context.Timezone.ToList<Timezone>();
         }
 
-        public Timezone GetByUserEmail(string id)
+        public Timezone GetByUserId(string id)
         {
-            return _context.Timezone.FirstOrDefault(t => t.Expert.UserEmail == id);
+            return _context.Timezone.FirstOrDefault(t => t.Expert.UserId == id);
         }
     }
 }

@@ -4,7 +4,7 @@ namespace stutor_core.Models.ViewModels
 {
     public class ExpertRegistrationVM
     {
-        public string UserEmail { get; set; }
+        public string UserId { get; set; }
 
         public int TopicId { get; set; }
         

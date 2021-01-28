@@ -28,14 +28,14 @@ namespace stutor_core.Repositories
             return _context.Expert.Where(e => e.Id == expertId).Include(x => x.TopicExpert).FirstOrDefault().TopicExpert.FirstOrDefault(t => t.TopicId == topicId).Price;
         }
 
-        public IEnumerable<Topic> GetExpertTopicsByUserEmail(string userEmail)
+        public IEnumerable<Topic> GetExpertTopicsByUserId(string userId)
         {
-            return _context.Topic.Where(t => t.Id == t.TopicExpert.TopicId && t.TopicExpert.Expert.UserEmail == userEmail).Include(x => x.TopicExpert);
+            return _context.Topic.Where(t => t.Id == t.TopicExpert.TopicId && t.TopicExpert.Expert.UserId == userId).Include(x => x.TopicExpert);
         }
 
-        public IEnumerable<Order> GetExpertOrdersByUserEmail(string userEmail)
+        public IEnumerable<Order> GetExpertOrdersByUserId(string userId)
         {
-            return _context.Order.Where(o => o.ExpertId == o.Expert.Id && o.Expert.UserEmail == userEmail).Include(x => x.Topic);
+            return _context.Order.Where(o => o.ExpertId == o.Expert.Id && o.Expert.UserId == userId).Include(x => x.Topic);
         }
 
         public TopicExpertsReturnVM GetTopicExpertsByTopicId(SelectedTopicVM selectedTopicVm)
@@ -69,21 +69,21 @@ namespace stutor_core.Repositories
             return id;
         }
 
-        public bool IsActive(string userEmail)
+        public bool IsActive(string userId)
         {
-            return _context.Expert.Single(x => x.UserEmail == userEmail).IsActive;
+            return _context.Expert.Single(x => x.UserId == userId).IsActive;
         }
 
-        public bool ToggleIsActive(string userEmail, bool isActive)
+        public bool ToggleIsActive(string userId, bool isActive)
         {
-            var record = _context.Expert.Single(e => e.UserEmail == userEmail && e.IsActive == isActive);
+            var record = _context.Expert.Single(e => e.UserId == userId && e.IsActive == isActive);
             record.IsActive = !isActive;
             return (_context.SaveChanges() == 1) ? !isActive : isActive;
         }
 
-        public bool UpdateTimezone(string userEmail, int timezoneId)
+        public bool UpdateTimezone(string userId, int timezoneId)
         {
-            var record = _context.Expert.FirstOrDefault(x => x.UserEmail == userEmail);
+            var record = _context.Expert.FirstOrDefault(x => x.UserId == userId);
             record.TimezoneId = timezoneId;
             return _context.SaveChanges() == 1;
         }
