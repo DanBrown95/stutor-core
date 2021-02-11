@@ -29,7 +29,7 @@ namespace stutor_core.Database
             modelBuilder.Entity<TopicExpert>()
                 .HasKey(e => new { e.TopicId, e.ExpertId });
 
-            modelBuilder.Entity<User>().HasKey(e => e.Email);
+            //modelBuilder.Entity<User>().HasKey(e => e.Email);
             modelBuilder.Entity<User>().HasOne(e => e.Expert).WithOne(u => u.User).HasForeignKey<Expert>(e => e.UserId);
 
         }

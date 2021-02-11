@@ -47,6 +47,10 @@ namespace stutor_core
                 options.Audience = Configuration["Auth0:audience"];
             });
 
+            StutorCoreM2MSettings stutorCoreM2mSettings = new StutorCoreM2MSettings();
+            Configuration.GetSection("StutorCoreM2m").Bind(stutorCoreM2mSettings);
+            services.AddSingleton<StutorCoreM2MSettings>(stutorCoreM2mSettings);
+
             SMSSettings smsSettings = new SMSSettings();
             Configuration.GetSection("SMSSettings").Bind(smsSettings);
             services.AddSingleton<SMSSettings>(smsSettings);
