@@ -10,6 +10,7 @@ using stutor_core.Services.Interfaces;
 using stutor_core.Configurations;
 using stutor_core.Database;
 using Microsoft.EntityFrameworkCore;
+using Twilio;
 
 namespace stutor_core
 {
@@ -51,9 +52,8 @@ namespace stutor_core
             Configuration.GetSection("StutorCoreM2m").Bind(stutorCoreM2mSettings);
             services.AddSingleton<StutorCoreM2MSettings>(stutorCoreM2mSettings);
 
-            SMSSettings smsSettings = new SMSSettings();
-            Configuration.GetSection("SMSSettings").Bind(smsSettings);
-            services.AddSingleton<SMSSettings>(smsSettings);
+            TwilioClient.Init(Configuration["SMSSettings:accountSid"], Configuration["SMSSettings:authToken"]);
+            services.Configure<SMSSettings>(Configuration.GetSection("SMSSettings"));
 
             // ... the rest of ConfigureServices
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);

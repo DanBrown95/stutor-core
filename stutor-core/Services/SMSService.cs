@@ -2,13 +2,14 @@
 using stutor_core.Models.Interfaces.SMS;
 using stutor_core.Models.SMS;
 using Microsoft.AspNetCore.Mvc;
-using Twilio;
 using Twilio.Rest.Api.V2010.Account;
 using System.Threading.Tasks;
+using System;
+using Twilio.Rest.Verify.V2.Service;
 
 namespace stutor_core.Services.Controllers
 {
-    public class SmsService : Controller
+    public class SmsService
     {
 
         private readonly SMSSettings _smsSettings;
@@ -57,10 +58,6 @@ namespace stutor_core.Services.Controllers
         /// <returns>Status of the sms send attempt</returns>
         private async Task<MessageResource.StatusEnum> SendSms(ISMS sms)
         {
-            string accountSid = _smsSettings.accountSid;
-            string authToken = _smsSettings.authToken;
-
-            TwilioClient.Init(accountSid, authToken);
             //var from = anonymous ? _smsSettings.anonymousName : new Twilio.Types.PhoneNumber(_smsSettings.from);
             var from = new Twilio.Types.PhoneNumber(_smsSettings.from);
 
@@ -70,6 +67,41 @@ namespace stutor_core.Services.Controllers
                 to: new Twilio.Types.PhoneNumber(sms.To)
             );
             return response.Status;
+        }
+
+        public async Task<string> SendVerificationAsync(string phone)
+        {
+            try
+            {
+                var verification = await VerificationResource.CreateAsync(
+                    to: "+1"+phone,
+                    channel: "sms",
+                    pathServiceSid: _smsSettings.VerificationServiceSID
+                );
+
+                return verification.Status;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<string> VerifyConfirmationPin(string phone, string pin)
+        {
+            try
+            {
+                var verification = await VerificationCheckResource.CreateAsync(
+                    to: "+1"+phone,
+                    code: pin,
+                    pathServiceSid: _smsSettings.VerificationServiceSID
+                );
+                return verification.Status;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }
