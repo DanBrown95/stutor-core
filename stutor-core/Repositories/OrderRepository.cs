@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using stutor_core.Database;
+using stutor_core.Models.Enumerations;
 using stutor_core.Models.Sql;
 using stutor_core.Utilities;
 using System.Collections.Generic;
@@ -87,7 +88,7 @@ namespace stutor_core.Repositories
                 {
                     return 0;
                 }
-                order.Status = "Completed";
+                order.Status = OrderStatus.Completed;
                 return _context.SaveChanges();
             }
             return 0;

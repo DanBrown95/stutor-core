@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
 using stutor_core.Database;
 using stutor_core.Models;
 using stutor_core.Models.Sql;
@@ -38,9 +39,17 @@ namespace stutor_core.Controllers
                 return Json(new { status = 400 });
             }
 
-            var googleCloudRepo = new GoogleCloudRepository();
-            await googleCloudRepo.UploadToBucketAsync(documents);
-
+            try
+            {
+                var googleCloudRepo = new GoogleCloudRepository();
+                await googleCloudRepo.UploadToBucketAsync(documents);
+            }
+            catch (Exception)
+            {
+                Log.Error("Could not upload expert application documents to the cloud");
+                return Json(new { status = 500 });
+            }
+            
             return Json(new { status = 200 });
         }
 

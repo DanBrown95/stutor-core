@@ -60,12 +60,20 @@ namespace stutor_core.Services.Controllers
         {
             //var from = anonymous ? _smsSettings.anonymousName : new Twilio.Types.PhoneNumber(_smsSettings.from);
             var from = new Twilio.Types.PhoneNumber(_smsSettings.from);
-
-            var response = await MessageResource.CreateAsync(
-                body: sms.Message,
-                from: from,
-                to: new Twilio.Types.PhoneNumber(sms.To)
-            );
+            MessageResource response;
+            try
+            {
+                response = await MessageResource.CreateAsync(
+                    body: sms.Message,
+                    from: from,
+                    to: new Twilio.Types.PhoneNumber(sms.To)
+                );
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            
             return response.Status;
         }
 

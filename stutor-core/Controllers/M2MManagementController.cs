@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using RestSharp;
+using Serilog;
 using stutor_core.Configurations;
 using System;
 using System.Collections.Generic;
@@ -62,6 +63,7 @@ namespace stutor_core.Controllers
             }
             catch (Exception ex)
             {
+                Log.Error("Could not resend email verification to userId {userId}", userId);
                 return StatusCode(500, ex.Message);
             }
             return Ok(new { success = true });

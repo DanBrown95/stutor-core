@@ -19,6 +19,8 @@
     <PackageReference Include="NodaTime" Version="3.0.0" />
     <PackageReference Include="Okta.AspNetCore" Version="1.3.0" />
     <PackageReference Include="RestSharp" Version="106.11.7" />
+    <PackageReference Include="Serilog.AspNetCore" Version="3.4.0" />
+    <PackageReference Include="Serilog.Sinks.Exceptionless" Version="3.1.3" />
     <PackageReference Include="Stripe.net" Version="37.6.0" />
     <PackageReference Include="TimeZoneNames" Version="4.0.1" />
     <PackageReference Include="Twilio" Version="5.45.2" />

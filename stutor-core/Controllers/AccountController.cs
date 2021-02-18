@@ -2,8 +2,10 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Serilog;
 using stutor_core.Configurations;
 using stutor_core.Database;
+using stutor_core.Models.Sql;
 using stutor_core.Models.ViewModels;
 using stutor_core.Services;
 using stutor_core.Services.Controllers;
@@ -32,9 +34,29 @@ namespace stutor_core.Controllers
         public async Task<JsonResult> ResendPhoneConfirmation([FromBody] string userId)
         {
             var smsService = new SmsService(_smsSettings);
-            var userPhone = _db.User.FirstOrDefault(u => u.Id == userId).Phone;
+            string status;
+            string userPhone;
 
-            var status = await smsService.SendVerificationAsync(userPhone);
+            try
+            {
+                userPhone = _db.User.FirstOrDefault(u => u.Id == userId).Phone;
+            }
+            catch (Exception)
+            {
+                Log.Error("Could not pull phone field from user {UserId} to resend phone confirmation text", userId);
+                return Json(new { status = "fail", error = "Invalid User ID" });
+            }
+
+            try
+            {
+                status = await smsService.SendVerificationAsync(userPhone);
+            }
+            catch (Exception)
+            {
+                Log.Error("Could not resend phone verification text to {UserId} phone {Phone}", userId, userPhone);
+                return Json(new { status = "fail", error = "Error with sms service" });
+            }
+
             return Json(new { status = status });
         }
 
@@ -42,20 +64,22 @@ namespace stutor_core.Controllers
         public async Task<JsonResult> VerifyPhonePin([FromBody] VerifyPhonePinVM vm)
         {
             var smsService = new SmsService(_smsSettings);
-            var userPhone = _db.User.FirstOrDefault(u => u.Id == vm.UserId).Phone;
-            if (userPhone == null || userPhone == "")
-            {
-                return Json(new { success = false, error = "Invalid Id or no number on file." });
-            }
+            User user = null; 
 
             try
             {
-                var result = await smsService.VerifyConfirmationPin(userPhone, vm.Pin);
+                user = _db.User.FirstOrDefault(u => u.Id == vm.UserId);
+                if (user == null || user.Phone == null || user.Phone == "")
+                {
+                    Log.Error("Could not find phone for user with id {userId} to verify phone pin", vm.UserId);
+                    return Json(new { success = false, error = "Invalid Id or no number on file." });
+                }
+
+                var result = await smsService.VerifyConfirmationPin(user.Phone, vm.Pin);
                 if (result == "approved")
                 {
-                    var user = _db.User.FirstOrDefault(x => x.Id == vm.UserId);
                     user.Phone_Verified = true;
-                    _db.Update<stutor_core.Models.Sql.User>(user);
+                    _db.Update<User>(user);
                     var rowsAffected = _db.SaveChanges();
 
                     if (rowsAffected == 1)
@@ -64,13 +88,14 @@ namespace stutor_core.Controllers
                     }
                     else
                     {
-                        // tbi: log that either we were unable to update the user or more than 1 user's phone status was updated.
+                        Log.Error("< or > 1 user had their phone_verified status set to true when updating userId {userId}.", vm.UserId);
                     }
                 }
                 return Json(new { success = false, exception = false, error = "Pin is incorrect" });
             }
             catch (Exception ex)
             {
+                Log.Error("Error thrown verifying phone confirmation pin with phone {phone} and pin {pin}", user.Phone, vm.Pin);
                 return Json(new { success = false, exception = true, error = ex.Message });
             }
             

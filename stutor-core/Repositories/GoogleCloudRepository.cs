@@ -1,6 +1,7 @@
 ﻿using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Storage.V1;
 using Microsoft.AspNetCore.Http;
+using Serilog;
 using System;
 using System.IO;
 using System.Reflection;
@@ -17,13 +18,23 @@ namespace stutor_core.Repositories
         {
             var path = Assembly.GetCallingAssembly().Location;
             string sharedkeyFilePath = path.Substring(0, path.LastIndexOf("\\")) + @"\" + "Stutor-google-cloud-services.dev.json";
-            GoogleCredential credential = null;
 
-            using (var jsonStream = new FileStream(sharedkeyFilePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+            GoogleCredential credential = null;
+            try
             {
-                credential = GoogleCredential.FromStream(jsonStream);
+                using (var jsonStream = new FileStream(sharedkeyFilePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+                {
+                    credential = GoogleCredential.FromStream(jsonStream);
+                }
+
+                _storageClient = StorageClient.Create(credential);
             }
-            _storageClient = StorageClient.Create(credential);
+            catch (Exception ex)
+            {
+                Log.Error("Could not read google-cloud-service config settings filestream from {path}", sharedkeyFilePath);
+                throw ex;
+            }
+            
         }
 
         public async Task UploadToBucketAsync(IFormCollection files)

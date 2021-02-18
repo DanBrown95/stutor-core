@@ -5,9 +5,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
+using Serilog;
 using stutor_core.Configurations;
 using stutor_core.Database;
 using stutor_core.Models;
+using stutor_core.Models.Enumerations;
 using stutor_core.Models.Sql;
 using stutor_core.Models.ViewModels;
 using stutor_core.Repositories;
@@ -29,6 +31,7 @@ namespace stutor_core.Controllers
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly SMSSettings _smsSettings;
         private readonly ExpertService _expertService;
+
         private readonly decimal serviceFee = 2.50M;
 
         public OrderController(ApplicationDbContext db, IEmailService emailService, IHostingEnvironment hostingEnvironment, SMSSettings smsSettings)
@@ -44,7 +47,7 @@ namespace stutor_core.Controllers
         [HttpPost]
         public int SubmitIntent([FromBody] SubmitIntentVM vm)
         {
-            vm.Status = "Unanswered";
+            vm.Status = OrderStatus.Unanswered;
             vm.Charge = vm.Price + serviceFee;
             var orderId = _repo.Create(vm);
             // need to store the order, then use the id to create the OrderPasskey object in the db
@@ -62,33 +65,70 @@ namespace stutor_core.Controllers
 
                     //Get the email template file
                     string path = string.Concat(_hostingEnvironment.ContentRootPath, "//templates//OrderConfirmationEmail.html");
-                    var text = System.IO.File.ReadAllText(path);
+                    string email = "";
+                    try
+                    {
+                        string text = System.IO.File.ReadAllText(path);
 
-                    // Escape curly braces and change triangle unicode braces to curly braces for string.format injection
-                    var switchOutDoubleQuotes = text.Replace("\"", "'");
-                    var escapedLeftBrace = switchOutDoubleQuotes.Replace("{", "{{");
-                    var escapedRightBrace = escapedLeftBrace.Replace("}", "}}");
-                    var addedLeftFormatPlaceholder = escapedRightBrace.Replace("&#9001;", "{");
-                    var addedRightFormatPlaceholder = addedLeftFormatPlaceholder.Replace("&#9002;", "}");
-                    var email = String.Format(addedRightFormatPlaceholder, vm.FriendlySubmitted, unhashed, vm.TopicName, vm.Price, serviceFee, vm.Charge, orderId.ToString());
+                        // Escape curly braces and change triangle unicode braces to curly braces for string.format injection
+                        var switchOutDoubleQuotes = text.Replace("\"", "'");
+                        var escapedLeftBrace = switchOutDoubleQuotes.Replace("{", "{{");
+                        var escapedRightBrace = escapedLeftBrace.Replace("}", "}}");
+                        var addedLeftFormatPlaceholder = escapedRightBrace.Replace("&#9001;", "{");
+                        var addedRightFormatPlaceholder = addedLeftFormatPlaceholder.Replace("&#9002;", "}");
+                        email = String.Format(addedRightFormatPlaceholder, vm.FriendlySubmitted, unhashed, vm.TopicName, vm.Price, serviceFee, vm.Charge, orderId.ToString());
+                    
+                    }
+                    catch (Exception)
+                    {
+                        Log.Error("Could not find the order confirmation email template at {path} or formatting the template", path);
+                    }
+
+                    
                     
                     //Send the email
                     var mailTemplate = new PasskeyEmail() { Email = vm.UserEmail, Subject = "Stutor order confirmation passkey" };
                     mailTemplate.Body = email;
-                    _emailService.SendPasskeyEmail(mailTemplate);
+                    try
+                    {
+                        _emailService.SendPasskeyEmail(mailTemplate);
+                    }
+                    catch (Exception)
+                    {
+                        Log.Error("Failed to send order confirmation email");
+                    }
 
                     //Send the confirmation text message to the user
                     var smsService = new SmsService(_smsSettings);
                     var userPhone = _db.User.FirstOrDefault(u => u.Id == vm.UserId).Phone;
-                    smsService.SendConfirmation(orderId, unhashed, userPhone);
+                    try
+                    {
+                        smsService.SendConfirmation(orderId, unhashed, userPhone);
+                    }
+                    catch (Exception)
+                    {
+                        Log.Error("Failed to send order confirmation text to ordering user phone {phone}", userPhone);
+                    }
 
                     //Send the text message to the expert
-                    var expertPhone = _expertService.GetPhoneById(vm.ExpertId);
-                    smsService.SendClientNumber(vm.UserPhone, expertPhone, vm.TopicName);
+                    string expertPhone = "";
+                    try
+                    {
+                        expertPhone = _expertService.GetPhoneById(vm.ExpertId);
+                        smsService.SendClientNumber(vm.UserPhone, expertPhone, vm.TopicName);
+                    }
+                    catch (Exception)
+                    {
+                        Log.Error("Could not send order text to Expert {expertId} with phone {expertPhone} for user with phone {userPhone}", vm.ExpertId, expertPhone, vm.UserPhone);
+                    }
+
                     return 1;
                 }
 
+                Log.Error("Failed to create order passkey for order {order} ", orderId);
             }
+
+            Log.Error("Failed to save order to Database for user {userId}. {price} {charge} {topic}", vm.UserId, vm.Price, vm.Charge, vm.TopicName);
             return 0;
         }
 
@@ -97,6 +137,11 @@ namespace stutor_core.Controllers
         {
             //Check if order has already been validated
             //If not check to see if the passkeys are correct and mark the order as validated.
+            var order = _repo.Get(vm.OrderId);
+            if(order.Status != OrderStatus.Unanswered)
+            {
+                return 0;
+            }
             var stored = _repo.GetOrderPasskey(vm.OrderId).ClientPasskey;
             var result = _repo.AuthenticatePasskey(vm.OrderId, vm.ClientPasskey, stored);
             return result;
