@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
+using Microsoft.Extensions.Options;
 using Serilog;
 using stutor_core.Configurations;
 using stutor_core.Database;
@@ -34,12 +35,12 @@ namespace stutor_core.Controllers
 
         private readonly decimal serviceFee = 2.50M;
 
-        public OrderController(ApplicationDbContext db, IEmailService emailService, IHostingEnvironment hostingEnvironment, SMSSettings smsSettings)
+        public OrderController(ApplicationDbContext db, IEmailService emailService, IHostingEnvironment hostingEnvironment, IOptions<SMSSettings> smsSettings)
         {
             _db = db;
             _repo = new OrderService(_db);
             _emailService = emailService;
-            _smsSettings = smsSettings;
+            _smsSettings = smsSettings.Value;
             _hostingEnvironment = hostingEnvironment;
             _expertService = new ExpertService(_db);
         }
@@ -84,10 +85,10 @@ namespace stutor_core.Controllers
                         Log.Error("Could not find the order confirmation email template at {path} or formatting the template", path);
                     }
 
-                    
-                    
+
+                    var user = _db.User.FirstOrDefault(u => u.Id == vm.UserId);
                     //Send the email
-                    var mailTemplate = new PasskeyEmail() { Email = vm.UserEmail, Subject = "Stutor order confirmation passkey" };
+                    var mailTemplate = new PasskeyEmail() { Email = user.Email, Subject = "Stutor order confirmation passkey" };
                     mailTemplate.Body = email;
                     try
                     {
@@ -100,14 +101,13 @@ namespace stutor_core.Controllers
 
                     //Send the confirmation text message to the user
                     var smsService = new SmsService(_smsSettings);
-                    var userPhone = _db.User.FirstOrDefault(u => u.Id == vm.UserId).Phone;
                     try
                     {
-                        smsService.SendConfirmation(orderId, unhashed, userPhone);
+                        smsService.SendConfirmation(orderId, unhashed, user.Phone);
                     }
                     catch (Exception)
                     {
-                        Log.Error("Failed to send order confirmation text to ordering user phone {phone}", userPhone);
+                        Log.Error("Failed to send order confirmation text to ordering user phone {phone}", user.Phone);
                     }
 
                     //Send the text message to the expert
