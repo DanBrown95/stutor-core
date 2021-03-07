@@ -12,6 +12,7 @@ namespace stutor_core.Database
 
         public DbSet<Timezone> Timezone { get; set; }
         public DbSet<Category> Category { get; set; }
+        public DbSet<PopularCategory> PopularCategory { get; set; }
         public DbSet<Topic> Topic { get; set; }
         public DbSet<Order> Order { get; set; }
         public DbSet<TopicExpert> TopicExpert { get; set; }

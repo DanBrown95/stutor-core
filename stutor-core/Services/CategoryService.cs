@@ -29,5 +29,10 @@ namespace stutor_core.Services
             _repo.Add(category);
         }
 
+        public IEnumerable<PopularCategory> GetAllPopular()
+        {
+            return _repo.GetAllPopular();
+        }
+
     }
 }

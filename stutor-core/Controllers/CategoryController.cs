@@ -25,5 +25,11 @@ namespace stutor_core.Controllers
         {
             return _categoryService.GetAll();
         }
+
+        [HttpGet]
+        public IEnumerable<PopularCategory> GetAllPopular()
+        {
+            return _categoryService.GetAllPopular();
+        }
     }
 }

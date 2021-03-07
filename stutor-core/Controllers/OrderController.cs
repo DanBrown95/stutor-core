@@ -154,11 +154,12 @@ namespace stutor_core.Controllers
             try
             {
                 var rowsAffected = _repo.UpdateFeedback(incomingOrder);
-                result = (rowsAffected > 0) ? Json(new { status = 200, error = "" }) : Json(new { status = 500, error = "" });
+                result = (rowsAffected > 0) ? Json(new { status = 200, error = "" }) : Json(new { status = 500, error = "Could not update feedback. Please try again later." });
             }
             catch (System.Exception ex)
             {
                 result = Json(new { status = 500, error = ex.Message });
+                Log.Error("Failed to update order feedback for order {orderId} with rating {rating} and additional info {additionalInfo}", incomingOrder.Id, incomingOrder.Rating, incomingOrder.AdditionalInfo);
             }
             return result;
         }

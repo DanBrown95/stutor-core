@@ -18,9 +18,6 @@ namespace stutor_core.Models.Sql
         [Required, MaxLength(74)]
         public string Name { get; set; }
 
-        [Required]
-        public string ImageUrl { get; set; }
-
 
         #region Foreign key mappings
 

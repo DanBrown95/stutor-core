@@ -1,4 +1,5 @@
-﻿using stutor_core.Database;
+﻿using Microsoft.EntityFrameworkCore;
+using stutor_core.Database;
 using stutor_core.Models.Sql;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,6 +29,11 @@ namespace stutor_core.Repositories
         public IEnumerable<Category> GetAll()
         {
             return _context.Category.ToList<Category>();
+        }
+
+        public IEnumerable<PopularCategory> GetAllPopular()
+        {
+            return _context.PopularCategory.Include(x => x.Category).ToList();
         }
     }
 }
