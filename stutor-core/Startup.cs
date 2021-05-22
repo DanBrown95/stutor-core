@@ -33,7 +33,7 @@ namespace stutor_core
                 options.AddPolicy(name: MyAllowSpecificOrigins,
                     builder =>
                     {
-                        builder.WithOrigins("http://localhost:8080").WithHeaders("Authorization","content-type");
+                        builder.WithOrigins("http://localhost:8080").WithHeaders("Authorization","Content-Type");
                     });
             });
 

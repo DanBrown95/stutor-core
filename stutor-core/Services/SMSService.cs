@@ -6,6 +6,7 @@ using Twilio.Rest.Api.V2010.Account;
 using System.Threading.Tasks;
 using System;
 using Twilio.Rest.Verify.V2.Service;
+using System.Linq;
 
 namespace stutor_core.Services.Controllers
 {
@@ -81,8 +82,10 @@ namespace stutor_core.Services.Controllers
         {
             try
             {
+                var toPhone = (new string(phone.Take(1).ToArray()) == "+") ? phone : "+1" + phone;
+
                 var verification = await VerificationResource.CreateAsync(
-                    to: "+1"+phone,
+                    to: toPhone,
                     channel: "sms",
                     pathServiceSid: _smsSettings.VerificationServiceSID
                 );
@@ -99,8 +102,10 @@ namespace stutor_core.Services.Controllers
         {
             try
             {
+                var toPhone = (new string(phone.Take(1).ToArray()) == "+") ? phone : "+1" + phone;
+
                 var verification = await VerificationCheckResource.CreateAsync(
-                    to: "+1"+phone,
+                    to: toPhone,
                     code: pin,
                     pathServiceSid: _smsSettings.VerificationServiceSID
                 );

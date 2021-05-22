@@ -48,6 +48,8 @@ namespace stutor_core.Models.Sql
 
         public DateTime? BanEnd { get; set; }
 
+        public string CustomerId { get; set; }
+
         #region Foreign key mappings
 
         public virtual Expert Expert { get; set; }

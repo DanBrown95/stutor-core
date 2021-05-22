@@ -23,11 +23,13 @@ namespace stutor_core.Controllers
     {
         private ApplicationDbContext _db;
         private SMSSettings _smsSettings;
+        private UserService _userService;
 
         public AccountController(ApplicationDbContext db, IOptions<SMSSettings> smsSettings)
         {
             _db = db;
             _smsSettings = smsSettings.Value;
+            _userService = new UserService(_db);
         }
 
         [HttpPost]
@@ -101,5 +103,12 @@ namespace stutor_core.Controllers
             
         }
 
+        [HttpPost]
+        public JsonResult UpdatePhoneNumber([FromBody] UpdatePhoneVM vm)
+        {
+            var updated = _userService.UpdatePhoneNumber(vm.UserId, vm.OldPhone, vm.NewPhone);
+
+            return Json(new { success = updated });
+        }
     }
 }

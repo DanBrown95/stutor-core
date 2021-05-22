@@ -80,7 +80,7 @@ namespace stutor_core.Services
                         // Attach the email images and set their CID's so they may be referenced in the email body
                         string path = string.Concat(_hostingEnvironment.ContentRootPath, "//templates//images//");
                         emailMessage.Attachments.Add(new Attachment(path + "logo_text_red_transparent.png") { ContentId = "stutorLogo" });
-                        emailMessage.Attachments.Add(new Attachment(path + "okok.gif") { ContentId = "okGif" });
+                        //emailMessage.Attachments.Add(new Attachment(path + "okok.gif") { ContentId = "okGif" }); // no longer needed with new email template
 
                         emailMessage.Headers.Add("Content-Type", "content=text/html; charset=\"UTF-8\"");
                         emailMessage.Body = vm.Body;
