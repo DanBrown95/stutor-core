@@ -8,7 +8,7 @@ namespace stutor_core.Models.SMS
 
         public SMS(string to, string message)
         {
-            To = "+1"+to;
+            To = to;
             Message = message;
         }
 

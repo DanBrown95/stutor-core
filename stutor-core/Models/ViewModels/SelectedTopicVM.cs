@@ -4,5 +4,6 @@
     {
         public int TopicId { get; set; }
         public string UserTimezone { get; set; }
+        public string RequestingUserId { get; set; }
     }
 }
