@@ -115,7 +115,7 @@ namespace stutor_core.Controllers
                     try
                     {
                         expertPhone = _expertService.GetPhoneById(vm.ExpertId);
-                        smsService.SendClientNumber(vm.UserPhone, expertPhone, vm.TopicName);
+                        smsService.SendClientNumber(user.Phone, expertPhone, vm.TopicName);
                     }
                     catch (Exception)
                     {
