@@ -11,7 +11,7 @@ namespace stutor_core.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class ContactController : ControllerBase
+    public class ContactController : Controller
     {
         private readonly IEmailService _emailService;
         public ContactController(IEmailService emailService)
@@ -22,8 +22,8 @@ namespace stutor_core.Controllers
         [HttpPost]
         public async Task<IActionResult> SendEmailAsync(ContactForm emailRequest)
         {
-            _emailService.SendContactUsEmail(emailRequest);
-            return Ok();
+            var status = await _emailService.SendContactUsEmail(emailRequest);
+            return Json(new { status });
         }
     }
 }

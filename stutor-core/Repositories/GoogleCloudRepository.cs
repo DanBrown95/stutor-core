@@ -39,9 +39,9 @@ namespace stutor_core.Repositories
 
         public async Task UploadToBucketAsync(IFormCollection files)
         {
+            string bucketName = _projectId + "-test-bucket";
             try
             {
-                string bucketName = _projectId + "-test-bucket";
                 foreach (var file in files.Files)
                 {
                     var stream = file.OpenReadStream();
@@ -50,6 +50,7 @@ namespace stutor_core.Repositories
             }
             catch (Exception ex)
             {
+                Log.Error("Could not add files to google cloud service bucket: {bucket}", bucketName);
                 throw ex;
             }
         }
