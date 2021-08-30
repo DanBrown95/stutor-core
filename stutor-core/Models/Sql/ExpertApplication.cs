@@ -37,6 +37,7 @@ namespace stutor_core.Models.Sql
         [Required]
         public int YearsOfExperience { get; set; }
 
+        public string Specialties { get; set; }
 
         #region Foreign key mappings
 

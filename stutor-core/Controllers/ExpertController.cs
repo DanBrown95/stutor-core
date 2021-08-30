@@ -64,7 +64,8 @@ namespace stutor_core.Controllers
                 LinkedinUrl = formData.LinkedinUrl,
                 Certifications = formData.Certifications,
                 YearsOfExperience = formData.YearsOfExperience,
-                Notes = formData.Notes
+                Notes = formData.Notes,
+                Specialties = formData.Specialties
             };
 
             var availability = "{\"days\":[\"" + string.Join("\",\"", formData.SelectedDays) + "\"]";

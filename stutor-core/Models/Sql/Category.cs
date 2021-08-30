@@ -7,10 +7,10 @@ namespace stutor_core.Models.Sql
     [Table("Category")]
     public class Category
     {
-        public Category()
-        {
-            this.Topics = new HashSet<Topic>(); 
-        }
+        //public Category()
+        //{
+        //    this.Topic = new HashSet<Topic>(); 
+        //}
 
         [Key, Required]
         public int Id { get; set; }
@@ -21,7 +21,7 @@ namespace stutor_core.Models.Sql
 
         #region Foreign key mappings
 
-        public virtual ICollection<Topic> Topics { get; set; }
+        public virtual ICollection<Topic> Topic { get; set; }
 
         #endregion
     }

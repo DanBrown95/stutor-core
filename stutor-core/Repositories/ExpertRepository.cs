@@ -52,7 +52,7 @@ namespace stutor_core.Repositories
                                                 && AvailabilityParser.IsAvailable(e.Availability, e.Expert.Timezone.TZName)
                                                 && sc.CustomerHasSources(e.Expert.User.CustomerId) == true
                                                 // where timezones match, where available and experts who have payment methods stored on their stripe account
-                                                ).GroupBy(g => g.Rating) // group by rating
+                                                ).Include(x => x.TopicExpertSpecialty).GroupBy(g => g.Rating) // group by rating
                                                 .Select(x => x.ElementAt(rnd.Next(0, x.Count()))); // randomly select 1 expert with each rating
 
             if (result.LocalExperts.Count() < 3) // if there are few results try opening up the criteria to more timezones.
@@ -63,8 +63,25 @@ namespace stutor_core.Repositories
                                                 && e.Expert.UserId != selectedTopicVm.RequestingUserId
                                                 && AvailabilityParser.IsAvailable(e.Availability, e.Expert.Timezone.TZName) // where currently available and not in the same timezone
                                                 && sc.CustomerHasSources(e.Expert.User.CustomerId) == true
-                                                ).GroupBy(g => g.Rating) // group by rating
+                                                ).Include(x => x.TopicExpertSpecialty).GroupBy(g => g.Rating) // group by rating
                                                 .Select(x => x.ElementAt(rnd.Next(0, x.Count()))); // randomly select 1 expert with each rating
+            }
+
+            // Retrieve expert specialties
+            foreach (var ex in result.DistantExperts)
+            {
+                foreach (var sp in ex.TopicExpertSpecialty)
+                {
+                    sp.Specialty = _context.Specialty.FirstOrDefault(x => x.Id == sp.SpecialtyId);
+                }
+            }
+
+            foreach (var ex in result.LocalExperts)
+            {
+                foreach (var sp in ex.TopicExpertSpecialty)
+                {
+                    sp.Specialty = _context.Specialty.FirstOrDefault(x => x.Id == sp.SpecialtyId);
+                }
             }
 
             return result;

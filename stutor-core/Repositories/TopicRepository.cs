@@ -51,5 +51,10 @@ namespace stutor_core.Repositories
             _context.TopicRequest.Add(request);
             return _context.SaveChanges();
         }
+
+        public IEnumerable<Specialty> GetAllSpecialtiesByTopicId(int id)
+        {
+            return _context.Specialty.Where(x => x.TopicId == id);
+        }
     }
 }

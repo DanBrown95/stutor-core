@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace stutor_core.Models.Sql
@@ -20,6 +21,9 @@ namespace stutor_core.Models.Sql
 
         public virtual Category Category { get; set; }
         public virtual TopicExpert TopicExpert { get; set; }
+        public virtual ICollection<Specialty> Specialty { get; set; }
+        public virtual ICollection<Order> Order { get; set; }
+        public virtual ICollection<ExpertApplication> ExpertApplication { get; set; }
 
         #endregion
 

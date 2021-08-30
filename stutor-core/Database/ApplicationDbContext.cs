@@ -25,12 +25,14 @@ namespace stutor_core.Database
         public DbSet<Role> Role { get; set; }
         public DbSet<UserRole> UserRole { get; set; }
         public DbSet<AvailableJob> AvailableJob { get; set; }
+        public DbSet<Specialty> Specialty { get; set; }
+        public DbSet<TopicExpertSpecialty> TopicExpertSpecialty { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<TopicExpert>()
-                .HasKey(e => new { e.TopicId, e.ExpertId });
+            //modelBuilder.Entity<TopicExpert>()
+            //    .HasKey(e => new { e.TopicId, e.ExpertId });
 
             //modelBuilder.Entity<User>().HasKey(e => e.Email);
             modelBuilder.Entity<User>().HasOne(e => e.Expert).WithOne(u => u.User).HasForeignKey<Expert>(e => e.UserId);

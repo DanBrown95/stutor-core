@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace stutor_core.Models.Sql
@@ -6,6 +7,9 @@ namespace stutor_core.Models.Sql
     [Table("TopicExpert")]
     public class TopicExpert
     {
+        [Key]
+        public int Id { get; set; }
+
         [Required, ForeignKey(nameof(Topic))]
         public int TopicId { get; set; }
 
@@ -22,10 +26,18 @@ namespace stutor_core.Models.Sql
         public string Availability { get; set; }
 
 
+        //#region vm properties
+
+        //public List<Specialty> Specialties { get; set; }
+
+        //#endregion
+
+
         #region Foreign key mappings
 
         public virtual Topic Topic { get; set; }
         public virtual Expert Expert { get; set; }
+        public virtual ICollection<TopicExpertSpecialty> TopicExpertSpecialty { get; set; }
 
         #endregion
 
