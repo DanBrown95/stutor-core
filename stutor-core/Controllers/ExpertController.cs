@@ -125,5 +125,12 @@ namespace stutor_core.Controllers
         {
             return _expertService.UpdateTimezone(vm.UserId, vm.TimezoneId);
         }
+
+        [HttpPost]
+        public JsonResult RevokeTopicExpert([FromBody] RevokeTopicExpert vm)
+        {
+            var result = _expertService.RevokeTopicExpert(vm.TopicExpertId, vm.ExpertId);
+            return Json(new { success = result });
+        }
     }
 }

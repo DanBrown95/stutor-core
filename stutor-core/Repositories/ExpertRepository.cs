@@ -31,7 +31,8 @@ namespace stutor_core.Repositories
 
         public IEnumerable<Topic> GetExpertTopicsByUserId(string userId)
         {
-            return _context.Topic.Where(t => t.Id == t.TopicExpert.TopicId && t.TopicExpert.Expert.UserId == userId).Include(x => x.TopicExpert);
+            var e  = _context.Topic.Where(t => t.Id == t.TopicExpert.TopicId && t.TopicExpert.Expert.UserId == userId && t.TopicExpert.IsActive == true).Include(x => x.TopicExpert).ToList();
+            return e;
         }
 
         public IEnumerable<Order> GetExpertOrdersByUserId(string userId)
@@ -46,6 +47,7 @@ namespace stutor_core.Repositories
 
             TopicExpertsReturnVM result = new TopicExpertsReturnVM();
             result.LocalExperts = _context.TopicExpert.Where(e => e.TopicId == selectedTopicVm.TopicId // Retrieve experts on topicId
+                                                && e.IsActive // Ensure they haven't revoked their status for that topic
                                                 && e.Expert.Timezone.TZName == selectedTopicVm.UserTimezone 
                                                 && e.Expert.IsActive
                                                 && e.Expert.UserId != selectedTopicVm.RequestingUserId
@@ -58,6 +60,7 @@ namespace stutor_core.Repositories
             if (result.LocalExperts.Count() < 3) // if there are few results try opening up the criteria to more timezones.
             {
                 result.DistantExperts = _context.TopicExpert.Where(e => e.TopicId == selectedTopicVm.TopicId // Retrieve experts on topicId
+                                                && e.IsActive // Ensure they haven't revoked their status for that topic
                                                 && e.Expert.Timezone.TZName != selectedTopicVm.UserTimezone 
                                                 && e.Expert.IsActive
                                                 && e.Expert.UserId != selectedTopicVm.RequestingUserId
@@ -117,6 +120,17 @@ namespace stutor_core.Repositories
         public string GetPhoneById(string expertId)
         {
             return _context.User.FirstOrDefault(x => x.Expert.Id == expertId).Phone;
+        }
+
+        public bool RevokeTopicExpert(int topicExpertId, string expertId)
+        {
+            var existingTopicExpert = _context.TopicExpert.FirstOrDefault(x => x.Id == topicExpertId && x.ExpertId == expertId);
+            if(existingTopicExpert.Id > 0)
+            {
+                existingTopicExpert.IsActive = false;
+                return _context.SaveChanges() == 1;
+            }
+            return false;
         }
     }
 }

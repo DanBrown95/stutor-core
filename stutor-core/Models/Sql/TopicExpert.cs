@@ -25,6 +25,7 @@ namespace stutor_core.Models.Sql
         [Required, MaxLength(200)]
         public string Availability { get; set; }
 
+        public bool IsActive { get; set; }
 
         //#region vm properties
 

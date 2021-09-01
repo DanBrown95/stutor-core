@@ -64,5 +64,10 @@ namespace stutor_core.Services
         {
             return _repo.GetPhoneById(expertId);
         }
+
+        public bool RevokeTopicExpert(int topicExpertId, string expertId)
+        {
+            return _repo.RevokeTopicExpert(topicExpertId, expertId);
+        }
     }
 }
