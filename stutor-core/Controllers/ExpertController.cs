@@ -8,7 +8,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Serilog;
+using stutor_core.Configurations;
 using stutor_core.Database;
 using stutor_core.Models;
 using stutor_core.Models.Sql;
@@ -24,11 +26,13 @@ namespace stutor_core.Controllers
     {
         private ExpertService _expertService;
         private ApplicationDbContext _db;
+        private AWSS3Service _awsS3Service;
 
-        public ExpertController(ApplicationDbContext db)
+        public ExpertController(ApplicationDbContext db, AWSS3Settings S3Settings)
         {
             _db = db;
             _expertService = new ExpertService(_db);
+            _awsS3Service = new AWSS3Service(S3Settings);
         }
 
         [HttpPost]
@@ -41,12 +45,10 @@ namespace stutor_core.Controllers
 
             try
             {
-                var googleCloudRepo = new GoogleCloudRepository();
-                await googleCloudRepo.UploadToBucketAsync(documents);
+                var result = await _awsS3Service.UploadMultipleToBucketAsync(documents);
             }
             catch (Exception)
             {
-                Log.Error("Could not upload expert application documents to the cloud");
                 return Json(new { status = 500 });
             }
             

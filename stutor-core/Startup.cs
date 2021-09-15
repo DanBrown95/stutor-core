@@ -55,6 +55,10 @@ namespace stutor_core
             TwilioClient.Init(Configuration["SMSSettings:accountSid"], Configuration["SMSSettings:authToken"]);
             services.Configure<SMSSettings>(Configuration.GetSection("SMSSettings"));
 
+            AWSS3Settings awsS3Settings = new AWSS3Settings();
+            Configuration.GetSection("AWSS3").Bind(awsS3Settings);
+            services.AddSingleton<AWSS3Settings>(awsS3Settings);
+
             // ... the rest of ConfigureServices
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddMvc().AddJsonOptions(
