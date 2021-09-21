@@ -69,5 +69,15 @@ namespace stutor_core.Services
         {
             return _repo.RevokeTopicExpert(topicExpertId, expertId);
         }
+
+        public IEnumerable<Specialty> GetSpecialties(int topicExpertId)
+        {
+            return _repo.GetSpecialties(topicExpertId);
+        }
+
+        public bool UpdateTopicExpertSpecialties(int topicExpertId, int[] specialtyIds)
+        {
+            return _repo.UpdateTopicExpertSpecialties(topicExpertId, specialtyIds);
+        }
     }
 }

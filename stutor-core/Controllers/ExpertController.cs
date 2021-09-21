@@ -134,5 +134,18 @@ namespace stutor_core.Controllers
             var result = _expertService.RevokeTopicExpert(vm.TopicExpertId, vm.ExpertId);
             return Json(new { success = result });
         }
+
+        [HttpPost]
+        public IEnumerable<Specialty> GetSpecialties([FromBody] int topicExpertId)
+        {
+            return _expertService.GetSpecialties(topicExpertId);
+        }
+
+        [HttpPost]
+        public JsonResult UpdateTopicExpertSpecialties([FromBody] UpdateTopicExpertSpecialties vm)
+        {
+            bool result = _expertService.UpdateTopicExpertSpecialties(vm.TopicExpertId, vm.SpecialtyIds);
+            return Json(new { success = result });
+        }
     }
 }

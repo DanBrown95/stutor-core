@@ -132,5 +132,33 @@ namespace stutor_core.Repositories
             }
             return false;
         }
+
+        public IEnumerable<Specialty> GetSpecialties(int topicExpertId)
+        {
+            return _context.TopicExpertSpecialty.Where(x => x.TopicExpertId == topicExpertId).Include(x => x.Specialty).Select(y => y.Specialty);
+        }
+
+        public bool UpdateTopicExpertSpecialties(int topicExpertId, int[] specialtyIds)
+        {
+            var existingSpecialties = _context.TopicExpertSpecialty.Where(x => x.TopicExpertId == topicExpertId);
+            if(existingSpecialties.Count() > 0)
+            {
+                _context.TopicExpertSpecialty.RemoveRange(existingSpecialties);
+                _context.SaveChanges();
+            }
+            
+            if(specialtyIds.Length > 0)
+            {
+                var newSpecialties = new List<TopicExpertSpecialty>();
+                foreach (var id in specialtyIds)
+                {
+                    var specialty = new TopicExpertSpecialty() { SpecialtyId = id, TopicExpertId = topicExpertId };
+                    newSpecialties.Add(specialty);
+                }
+                _context.TopicExpertSpecialty.AddRange(newSpecialties);
+                _context.SaveChanges();
+            }
+            return true;
+        }
     }
 }
