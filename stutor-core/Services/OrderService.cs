@@ -53,5 +53,15 @@ namespace stutor_core.Services
         {
             return _repo.AuthenticatePasskey(orderId, incomingPasskey, storedHash);
         }
+
+        public int UpdateStatus(string status, int orderId)
+        {
+            return _repo.UpdateStatus(status, orderId);
+        }
+
+        public int SetRequiresCapture(int orderId)
+        {
+            return _repo.SetRequiresCapture(orderId);
+        }
     }
 }

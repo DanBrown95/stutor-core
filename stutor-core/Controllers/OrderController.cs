@@ -27,7 +27,7 @@ namespace stutor_core.Controllers
     public class OrderController : Controller
     {
         private readonly ApplicationDbContext _db;
-        private readonly OrderService _repo;
+        private readonly OrderService _orderService;
         private readonly IEmailService _emailService;
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly SMSSettings _smsSettings;
@@ -38,7 +38,7 @@ namespace stutor_core.Controllers
         public OrderController(ApplicationDbContext db, IEmailService emailService, IHostingEnvironment hostingEnvironment, IOptions<SMSSettings> smsSettings)
         {
             _db = db;
-            _repo = new OrderService(_db);
+            _orderService = new OrderService(_db);
             _emailService = emailService;
             _smsSettings = smsSettings.Value;
             _hostingEnvironment = hostingEnvironment;
@@ -50,7 +50,7 @@ namespace stutor_core.Controllers
         {
             vm.Status = OrderStatus.Unanswered;
             vm.Charge = vm.Price + serviceFee;
-            var orderId = _repo.Create(vm);
+            var orderId = _orderService.Create(vm);
             // need to store the order, then use the id to create the OrderPasskey object in the db
             if (orderId > 0)
             {
@@ -59,7 +59,7 @@ namespace stutor_core.Controllers
 
                 var hashed = PasskeySecurity.Hash(unhashed);
                 var orderPasskey = new OrderPasskey() { OrderId = orderId, ClientPasskey = hashed };
-                var result = _repo.CreateOrderPasskey(orderPasskey);
+                var result = _orderService.CreateOrderPasskey(orderPasskey);
 
                 if (result > 0) // Order passkey has been created. Send confirmation text and email
                 {
@@ -83,6 +83,8 @@ namespace stutor_core.Controllers
                     catch (Exception)
                     {
                         Log.Error("Could not find the order confirmation email template at {path} or formatting the template", path);
+                        CancelPayment(vm.PaymentIntentId, orderId);
+                        return 500;
                     }
 
 
@@ -121,15 +123,54 @@ namespace stutor_core.Controllers
                     {
                         Log.Error("Could not send order text to Expert {expertId} with phone {expertPhone} for user with phone {userPhone}", vm.ExpertId, expertPhone, vm.UserPhone);
                     }
-
-                    return 1;
+                    CaptureFunds(vm.PaymentIntentId, orderId);
+                    return 200;
                 }
 
-                Log.Error("Failed to create order passkey for order {order} ", orderId);
+                Log.Error("Failed to create order passkey for order {order}. {paymentIntentId} ", orderId);
+                CancelPayment(vm.PaymentIntentId, orderId);
+                return 500;
             }
 
-            Log.Error("Failed to save order to Database for user {userId}. {price} {charge} {topic}", vm.UserId, vm.Price, vm.Charge, vm.TopicName);
-            return 0;
+            Log.Error("Failed to save order to Database for user {userId}. {paymentIntentId} {price} {charge} {topic}", vm.PaymentIntentId, vm.UserId, vm.Price, vm.Charge, vm.TopicName);
+            CancelPayment(vm.PaymentIntentId, orderId);
+            return 500;
+        }
+
+        private bool CaptureFunds(string paymentIntentId, int orderId)
+        {
+            var service = new Stripe.PaymentIntentService();
+            var paymentIntent = service.Capture(paymentIntentId);
+            if (paymentIntent.Status != "succeeded")
+            {
+                Log.Error("CRITICAL: Failed to capture payment from user. Their payment is on hold. Stripe will revert their payment in 7 days unless captured. {paymentIntentId}.", paymentIntentId);
+                _orderService.SetRequiresCapture(orderId);
+                return false;
+            }
+            return true;
+        }
+
+        private bool CancelPayment(string paymentIntentId, int orderId)
+        {
+            var service = new Stripe.PaymentIntentService();
+            var options = new Stripe.PaymentIntentCancelOptions { };
+            var intent = service.Cancel(paymentIntentId, options);
+            if (intent == null || intent.Status != "canceled")
+            {
+                Log.Error("CRITICAL: Failed to cancel payment after server side issue triggered a refund. Payment is still on hold. Take over! {paymentIntentId}, {orderId}.", paymentIntentId, orderId);
+                _orderService.UpdateStatus(OrderStatus.CancelationPending, orderId);
+
+                return false;
+            }else if(intent != null && intent.Status == "canceled") {
+                Log.Error("REMEDIED: Payment intent canceled after server side issue triggered a refund. Verify canceled payment on stripe.com. {paymentIntentId}, {orderId}.", paymentIntentId, orderId);
+                _orderService.UpdateStatus(OrderStatus.Canceled, orderId);
+
+                return true;
+            }
+            Log.Error("CRITICAL: Payment cancellation status unknown after server side issue triggered a refund. Payment may still be on hold. verify payment is canceled on on stripe.com. Take over! {paymentIntentId}, {orderId}.", paymentIntentId, orderId);
+            _orderService.UpdateStatus(OrderStatus.CancelationPending, orderId);
+
+            return false;
         }
 
         [HttpPost]
@@ -137,13 +178,13 @@ namespace stutor_core.Controllers
         {
             //Check if order has already been validated
             //If not check to see if the passkeys are correct and mark the order as validated.
-            var order = _repo.Get(vm.OrderId);
+            var order = _orderService.Get(vm.OrderId);
             if(order.Status != OrderStatus.Unanswered)
             {
                 return 0;
             }
-            var stored = _repo.GetOrderPasskey(vm.OrderId).ClientPasskey;
-            var result = _repo.AuthenticatePasskey(vm.OrderId, vm.ClientPasskey, stored);
+            var stored = _orderService.GetOrderPasskey(vm.OrderId).ClientPasskey;
+            var result = _orderService.AuthenticatePasskey(vm.OrderId, vm.ClientPasskey, stored);
             return result;
         }
 
@@ -153,7 +194,7 @@ namespace stutor_core.Controllers
             JsonResult result = Json(new { error = ""});
             try
             {
-                var rowsAffected = _repo.UpdateFeedback(incomingOrder);
+                var rowsAffected = _orderService.UpdateFeedback(incomingOrder);
                 result = (rowsAffected > 0) ? Json(new { status = 200, error = "" }) : Json(new { status = 500, error = "Could not update feedback. Please try again later." });
             }
             catch (System.Exception ex)
@@ -167,7 +208,7 @@ namespace stutor_core.Controllers
         [HttpPost]
         public IEnumerable<Order> GetAllByUserId([FromBody] string userId)
         {   
-            return _repo.GetAllByUserId(userId);
+            return _orderService.GetAllByUserId(userId);
         }
     }
 }

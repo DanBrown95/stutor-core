@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Serilog;
 using Stripe;
 using Stripe.BillingPortal;
 using stutor_core.Database;
@@ -50,6 +51,7 @@ namespace stutor_core.Controllers
                 SetupFutureUsage = "off_session",
                 Amount = CalculateOrderAmount(purchase.ExpertId, purchase.TopicId),
                 Currency = "usd",
+                CaptureMethod = "manual"
             });
             return Json(new { clientSecret = paymentIntent.ClientSecret });
         }

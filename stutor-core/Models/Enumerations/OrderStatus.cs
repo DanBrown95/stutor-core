@@ -10,5 +10,7 @@ namespace stutor_core.Models.Enumerations
         public const string Unanswered = "unanswered";
         public const string Completed = "completed";
         public const string Refunded = "refunded";
+        public const string Canceled = "canceled";
+        public const string CancelationPending = "cancelation pending";
     }
 }

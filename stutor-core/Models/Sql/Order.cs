@@ -41,6 +41,8 @@ namespace stutor_core.Models.Sql
         [MaxLength(100)]
         public string PaymentIntentId { get; set; }
 
+        public bool RequiresCapture { get; set; }
+
 
         #region Foreign key mappings
 
