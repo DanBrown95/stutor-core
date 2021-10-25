@@ -51,6 +51,12 @@ namespace stutor_core.Controllers
         {
             return _topicService.GetAllSpecialtiesByTopicId(id);
         }
-        
+
+        [HttpPost]
+        public IEnumerable<Topic> GetRelatedTopics([FromBody] int id)
+        {
+            return _topicService.GetRelatedTopics(id);
+        }
+
     }
 }

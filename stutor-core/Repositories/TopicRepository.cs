@@ -56,5 +56,15 @@ namespace stutor_core.Repositories
         {
             return _context.Specialty.Where(x => x.TopicId == id);
         }
+
+        public IEnumerable<Topic> GetRelatedTopics(int id)
+        {
+            int categoryId = _context.Topic.FirstOrDefault(x => x.Id == id).CategoryId;
+            if (categoryId == 0)
+            {
+                return new List<Topic>();
+            }
+            return _context.Topic.Where(x => x.CategoryId == categoryId && x.Id != id).Take(6);
+        }
     }
 }

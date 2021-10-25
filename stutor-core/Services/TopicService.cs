@@ -55,5 +55,10 @@ namespace stutor_core.Services
         {
             return _repo.GetAllSpecialtiesByTopicId(id);
         }
+
+        public IEnumerable<Topic> GetRelatedTopics(int id)
+        {
+            return _repo.GetRelatedTopics(id);
+        }
     }
 }
