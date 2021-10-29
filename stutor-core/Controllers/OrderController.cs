@@ -63,42 +63,14 @@ namespace stutor_core.Controllers
 
                 if (result > 0) // Order passkey has been created. Send confirmation text and email
                 {
-
-                    //Get the email template file
-                    string path = string.Concat(_hostingEnvironment.ContentRootPath, "//templates//OrderConfirmationEmail.html");
-                    string email = "";
-                    try
-                    {
-                        string text = System.IO.File.ReadAllText(path);
-
-                        // Escape curly braces and change triangle unicode braces to curly braces for string.format injection
-                        var switchOutDoubleQuotes = text.Replace("\"", "'");
-                        var escapedLeftBrace = switchOutDoubleQuotes.Replace("{", "{{");
-                        var escapedRightBrace = escapedLeftBrace.Replace("}", "}}");
-                        var addedLeftFormatPlaceholder = escapedRightBrace.Replace("&#9001;", "{");
-                        var addedRightFormatPlaceholder = addedLeftFormatPlaceholder.Replace("&#9002;", "}");
-                        email = String.Format(addedRightFormatPlaceholder, vm.FriendlySubmitted, unhashed, vm.TopicName, vm.Price, serviceFee, vm.Charge, orderId.ToString());
-                    
-                    }
-                    catch (Exception)
-                    {
-                        Log.Error("Could not find the order confirmation email template at {path} or formatting the template", path);
-                        CancelPayment(vm.PaymentIntentId, orderId);
-                        return 500;
-                    }
-
-
                     var user = _db.User.FirstOrDefault(u => u.Id == vm.UserId);
-                    //Send the email
-                    var mailTemplate = new PasskeyEmail() { Email = user.Email, Subject = "Stutor order confirmation passkey" };
-                    mailTemplate.Body = email;
                     try
                     {
-                        _emailService.SendPasskeyEmail(mailTemplate);
+                        _emailService.SendOrderConfirmationEmail(user.Firstname, user.Email, unhashed, vm.FriendlySubmitted, orderId, vm.Price, vm.Charge, serviceFee, vm.TopicName);
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
-                        Log.Error("Failed to send order confirmation email");
+                        Log.Error("Failed to send order confirmation email. {error}", e.Message);
                     }
 
                     //Send the confirmation text message to the user

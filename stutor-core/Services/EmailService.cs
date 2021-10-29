@@ -13,6 +13,10 @@ using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
 using System.IO;
+using sib_api_v3_sdk.Api;
+using sib_api_v3_sdk.Client;
+using sib_api_v3_sdk.Model;
+using Newtonsoft.Json.Linq;
 
 namespace stutor_core.Services
 {
@@ -117,6 +121,56 @@ namespace stutor_core.Services
             {
                 Log.Error("Error creating order confirmation email. {message}", ex.Message);
                 throw ex;
+            }
+        }
+
+        public void SendOrderConfirmationEmail(string customerFirstname, string customerEmail, string passkey, string date, int orderId, decimal price, decimal charge, decimal serviceFee, string topic)
+        {
+            Configuration.Default.ApiKey.Add("api-key", "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");
+
+            var apiInstance = new TransactionalEmailsApi();
+            SendSmtpEmailTo smtpEmailTo = new SendSmtpEmailTo(customerEmail, customerFirstname);
+            List<SendSmtpEmailTo> To = new List<SendSmtpEmailTo>();
+            To.Add(smtpEmailTo);
+
+            string ReplyToName = "noreply";
+            string ReplyToEmail = "noreply@stutor.us";
+            SendSmtpEmailReplyTo ReplyTo = new SendSmtpEmailReplyTo(ReplyToEmail, ReplyToName);
+
+            //string AttachmentUrl = null;
+            //string stringInBase64 = "aGVsbG8gdGhpcyBpcyB0ZXN0";
+            //byte[] Content = System.Convert.FromBase64String(stringInBase64);
+            //string AttachmentName = "test.txt";
+            //SendSmtpEmailAttachment AttachmentContent = new SendSmtpEmailAttachment(AttachmentUrl, Content, AttachmentName);
+            //List<SendSmtpEmailAttachment> Attachment = new List<SendSmtpEmailAttachment>();
+            //Attachment.Add(AttachmentContent);
+
+
+            long? TemplateId = (long)1;
+            JObject Params = new JObject();
+            Params.Add("firstname", customerFirstname);
+            Params.Add("passkey", passkey);
+            Params.Add("orderId", orderId);
+            Params.Add("date", date);
+            Params.Add("topic", topic);
+            Params.Add("price", price.ToString("F2"));
+            Params.Add("serviceFee", serviceFee.ToString("F2"));
+            Params.Add("charge", charge.ToString("F2"));
+
+            List<string> Tags = new List<string>();
+            Tags.Add("stutor");
+            Tags.Add("order");
+            Tags.Add("passkey");
+            Tags.Add("confirmation");
+
+            try
+            {
+                var sendSmtpEmail = new SendSmtpEmail(null, To, null, null, null, null, null, ReplyTo, null, null, TemplateId, Params, null, Tags);
+                CreateSmtpEmail result = apiInstance.SendTransacEmail(sendSmtpEmail);
+            }
+            catch (Exception e)
+            {
+                Log.Error("Failed to send order confirmation email through sendinblue. {Message}", e.Message);
             }
         }
     }
