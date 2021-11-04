@@ -41,9 +41,9 @@ namespace stutor_core.Repositories
         {
             var result = from o in _context.Order
 
-                         where o.ExpertId == o.Expert.Id && o.Expert.UserId == userId
+                         where o.ExpertId == o.Expert.Id && o.Expert.UserId == userId && o.User.Id == o.UserId
 
-                         select new Order() { Id = o.Id, Submitted = o.Submitted, Status = o.Status, CallLength = o.CallLength, Price = o.Price, Topic = o.Topic };
+                         select new Order() { Id = o.Id, Submitted = o.Submitted, Status = o.Status, CallLength = o.CallLength, Price = o.Price, Topic = o.Topic, User = new User() { Phone = (o.Status.ToLower() == "unanswered") ? o.User.Phone : "" } };
             
             return result;
         }
