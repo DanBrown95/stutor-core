@@ -1,16 +1,16 @@
-﻿using stutor_core.Database;
-using stutor_core.Models.Sql;
-using stutor_core.Repositories;
+﻿using stutor_core.Models.Sql;
+using stutor_core.Repositories.Interfaces;
+using stutor_core.Services.Interfaces;
 
 namespace stutor_core.Services
 {
-    public class UserService
+    public class UserService : IUserService
     {
-        private readonly UserRepository _repo;
+        private readonly IUserRepository _repo;
 
-        public UserService(ApplicationDbContext context)
+        public UserService(IUserRepository repo)
         {
-            _repo = new UserRepository(context);
+            _repo = repo;
         }
 
         public User Get(string id)

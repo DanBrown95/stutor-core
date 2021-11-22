@@ -11,6 +11,8 @@ using stutor_core.Configurations;
 using stutor_core.Database;
 using Microsoft.EntityFrameworkCore;
 using Twilio;
+using stutor_core.Repositories.Interfaces;
+using stutor_core.Repositories;
 
 namespace stutor_core
 {
@@ -75,6 +77,23 @@ namespace stutor_core
             services.AddEntityFrameworkSqlServer()
                 .AddDbContext<ApplicationDbContext>
             (option => option.UseSqlServer(connection));
+
+            services.AddScoped<ICareerService, CareerService>();
+            services.AddScoped<ICareerRepository, CareerRepository>();
+            services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
+            services.AddScoped<IDictionaryService, DictionaryService>();
+            services.AddScoped<IDictionaryRepository, DictionaryRepository>();
+            services.AddScoped<IExpertService, ExpertService>();
+            services.AddScoped<IExpertRepository, ExpertRepository>();
+            services.AddScoped<IOrderService, Services.OrderService>();
+            services.AddScoped<IOrderRepository, OrderRepository>();
+            services.AddScoped<ITimezoneService, TimezoneService>();
+            services.AddScoped<ITimezoneRepository, TimezoneRepository>();
+            services.AddScoped<ITopicService, TopicService>();
+            services.AddScoped<ITopicRepository, TopicRepository>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IUserRepository, UserRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

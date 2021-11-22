@@ -1,20 +1,14 @@
 ﻿using stutor_core.Database;
 using stutor_core.Models.Sql;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using stutor_core.Repositories.Interfaces;
 
 namespace stutor_core.Repositories
 {
-    public class TimezoneRepository
+    public class TimezoneRepository : BaseRepository, ITimezoneRepository
     {
-        private ApplicationDbContext _context { get; set; }
-
-        public TimezoneRepository(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+        public TimezoneRepository(ApplicationDbContext context) : base(context) { }
 
         public void Add(Timezone timezone)
         {

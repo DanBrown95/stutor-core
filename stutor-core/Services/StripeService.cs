@@ -1,8 +1,9 @@
 ﻿using Stripe;
+using stutor_core.Services.Interfaces;
 
 namespace stutor_core.Services
 {
-    public class StripeController
+    public class StripeService : IStripeService
     {
         public bool CustomerHasSources(string customerId)
         {

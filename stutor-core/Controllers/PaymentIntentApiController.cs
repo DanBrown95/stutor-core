@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using Serilog;
 using Stripe;
 using Stripe.BillingPortal;
-using stutor_core.Database;
 using stutor_core.Models.ViewModels;
-using stutor_core.Services;
+using stutor_core.Services.Interfaces;
 
 namespace stutor_core.Controllers
 {
@@ -17,16 +14,12 @@ namespace stutor_core.Controllers
     [ApiController]
     public class PaymentIntentApiController : Controller
     {
-        ApplicationDbContext _db;
-        ExpertService _expertService;
-        UserService _userService;
+        IExpertService _expertService;
         private readonly decimal serviceFee = 2.50M;
 
-        public PaymentIntentApiController(ApplicationDbContext db)
+        public PaymentIntentApiController(IExpertService expertService)
         {
-            _db = db;
-            _expertService = new ExpertService(_db);
-            _userService = new UserService(_db);
+            _expertService = expertService;
         }
 
         [HttpPost]
@@ -105,23 +98,21 @@ namespace stutor_core.Controllers
     [ApiController]
     public class PaymentPortalController : Controller
     {
-        ApplicationDbContext _db;
-        UserService _userService;
+        IUserService _userService;
 
-        public PaymentPortalController(ApplicationDbContext db)
+        public PaymentPortalController(IUserService userService)
         {
-            _db = db;
-            _userService = new UserService(_db);
+            _userService = userService;
         }
 
         [HttpPost]
-        public async Task<IActionResult> RedirectToCustomerPortal([FromBody] StripeCustomerPortalVM model)
+        public IActionResult RedirectToCustomerPortal([FromBody] StripeCustomerPortalVM model)
         {
             // Authenticate your user. Get customerID by userId from db
             var storedUser = _userService.Get(model.UserId);
-            if (model.CustomerId != null ||  storedUser.CustomerId != null)
+            if (model.CustomerId != null || storedUser.CustomerId != null)
             {
-                if(model.CustomerId != storedUser.CustomerId)
+                if (model.CustomerId != storedUser.CustomerId)
                 {
                     return NotFound();
                 }

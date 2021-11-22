@@ -1,20 +1,15 @@
 ﻿using stutor_core.Database;
 using stutor_core.Models.Sql;
-using System;
+using stutor_core.Repositories.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace stutor_core.Repositories
 {
-    public class CareerRepository
+    public class CareerRepository : BaseRepository, ICareerRepository
     {
-        private ApplicationDbContext _context { get; set; }
 
-        public CareerRepository(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+        public CareerRepository(ApplicationDbContext context) : base(context) { }
 
         public IEnumerable<AvailableJob> GetAllAvailableJobs()
         {

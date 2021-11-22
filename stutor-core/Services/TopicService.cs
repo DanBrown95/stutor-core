@@ -1,19 +1,18 @@
-﻿using stutor_core.Database;
-using stutor_core.Models;
+﻿using stutor_core.Models;
 using stutor_core.Models.Sql;
-using stutor_core.Repositories;
 using System.Collections.Generic;
-using System.Linq;
+using stutor_core.Services.Interfaces;
+using stutor_core.Repositories.Interfaces;
 
 namespace stutor_core.Services
 {
-    public class TopicService
+    public class TopicService : ITopicService
     {
-        private readonly TopicRepository _repo;
+        private readonly ITopicRepository _repo;
 
-        public TopicService(ApplicationDbContext context)
+        public TopicService(ITopicRepository repo)
         {
-            _repo = new TopicRepository(context);
+            _repo = repo;
         }
 
         public Topic Get(int id)

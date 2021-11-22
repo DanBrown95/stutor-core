@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Serilog;
 using stutor_core.Configurations;
-using stutor_core.Database;
 using stutor_core.Models;
 using stutor_core.Models.Sql;
 using stutor_core.Models.ViewModels;
 using stutor_core.Services;
+using stutor_core.Services.Interfaces;
 
 namespace stutor_core.Controllers
 {
@@ -17,19 +16,17 @@ namespace stutor_core.Controllers
     [ApiController]
     public class ExpertController : Controller
     {
-        private ExpertService _expertService;
-        private OrderService _orderService;
-        private ApplicationDbContext _db;
+        private IExpertService _expertService;
+        private IOrderService _orderService;
+        private ITimezoneService _timezoneService;
         private AWSS3Service _awsS3Service;
-        private TimezoneService _timezoneService;
 
-        public ExpertController(ApplicationDbContext db, AWSS3Settings S3Settings)
+        public ExpertController(AWSS3Settings S3Settings, IExpertService expertService, IOrderService orderService, ITimezoneService timezoneService)
         {
-            _db = db;
-            _expertService = new ExpertService(_db);
+            _expertService = expertService;
+            _orderService = orderService;
+            _timezoneService = timezoneService;
             _awsS3Service = new AWSS3Service(S3Settings);
-            _orderService = new OrderService(_db);
-            _timezoneService = new TimezoneService(_db);
         }
 
         [HttpPost]

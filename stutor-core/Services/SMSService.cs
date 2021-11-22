@@ -1,16 +1,16 @@
 ﻿using stutor_core.Configurations;
 using stutor_core.Models.Interfaces.SMS;
 using stutor_core.Models.SMS;
-using Microsoft.AspNetCore.Mvc;
 using Twilio.Rest.Api.V2010.Account;
 using System.Threading.Tasks;
 using System;
 using Twilio.Rest.Verify.V2.Service;
 using System.Linq;
+using stutor_core.Services.Interfaces;
 
 namespace stutor_core.Services.Controllers
 {
-    public class SmsService
+    public class SmsService : ISMSService
     {
 
         private readonly SMSSettings _smsSettings;

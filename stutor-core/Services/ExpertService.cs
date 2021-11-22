@@ -1,18 +1,18 @@
 ﻿using System.Collections.Generic;
-using stutor_core.Database;
 using stutor_core.Models.Sql;
 using stutor_core.Models.ViewModels;
-using stutor_core.Repositories;
+using stutor_core.Repositories.Interfaces;
+using stutor_core.Services.Interfaces;
 
 namespace stutor_core.Services
 {
-    public class ExpertService
+    public class ExpertService : IExpertService
     {
-        private readonly ExpertRepository _repo;
+        private readonly IExpertRepository _repo;
 
-        public ExpertService(ApplicationDbContext context)
+        public ExpertService(IExpertRepository repo)
         {
-            _repo = new ExpertRepository(context);
+            _repo = repo;
         }
 
         public Expert Get(string id)
@@ -29,11 +29,6 @@ namespace stutor_core.Services
         {
             return _repo.GetExpertTopicsByUserId(userId);
         }
-
-        //public IEnumerable<Order> GetExpertOrdersByUserId(string userId)
-        //{
-        //    return _repo.GetExpertOrdersByUserId(userId);
-        //}
 
         public TopicExpertsReturnVM GetTopicExpertsByTopicId(SelectedTopicVM selectedTopicVm)
         {

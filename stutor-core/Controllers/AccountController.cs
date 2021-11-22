@@ -7,10 +7,9 @@ using stutor_core.Configurations;
 using stutor_core.Database;
 using stutor_core.Models.Sql;
 using stutor_core.Models.ViewModels;
-using stutor_core.Services;
 using stutor_core.Services.Controllers;
+using stutor_core.Services.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -23,13 +22,13 @@ namespace stutor_core.Controllers
     {
         private ApplicationDbContext _db;
         private SMSSettings _smsSettings;
-        private UserService _userService;
+        private IUserService _userService;
 
-        public AccountController(ApplicationDbContext db, IOptions<SMSSettings> smsSettings)
+        public AccountController(ApplicationDbContext db, IOptions<SMSSettings> smsSettings, IUserService userService)
         {
             _db = db;
             _smsSettings = smsSettings.Value;
-            _userService = new UserService(_db);
+            _userService = userService;
         }
 
         [HttpPost]

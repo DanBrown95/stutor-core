@@ -10,7 +10,6 @@ using stutor_core.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Net.Mail;
 using System.Threading.Tasks;
 using System.IO;
 using sib_api_v3_sdk.Api;

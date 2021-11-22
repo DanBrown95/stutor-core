@@ -1,17 +1,17 @@
-﻿using stutor_core.Database;
-using stutor_core.Models.Sql;
-using stutor_core.Repositories;
+﻿using stutor_core.Models.Sql;
 using System.Collections.Generic;
+using stutor_core.Services.Interfaces;
+using stutor_core.Repositories.Interfaces;
 
 namespace stutor_core.Services
 {
-    public class TimezoneService
+    public class TimezoneService : ITimezoneService
     {
-        private readonly TimezoneRepository _repo;
+        private readonly ITimezoneRepository _repo;
 
-        public TimezoneService(ApplicationDbContext context)
+        public TimezoneService(ITimezoneRepository repo)
         {
-            _repo = new TimezoneRepository(context);
+            _repo = repo;
         }
 
         public Timezone Get(int id)

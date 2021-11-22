@@ -1,17 +1,13 @@
 ﻿using stutor_core.Database;
 using stutor_core.Models.Sql;
 using System.Linq;
+using stutor_core.Repositories.Interfaces;
 
 namespace stutor_core.Repositories
 {
-    public class UserRepository
+    public class UserRepository : BaseRepository, IUserRepository
     {
-        private ApplicationDbContext _context { get; set; }
-
-        public UserRepository(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+        public UserRepository(ApplicationDbContext context) : base(context) { }
 
         public User Get(string id)
         {

@@ -1,17 +1,17 @@
-﻿using stutor_core.Database;
-using stutor_core.Models.Sql;
-using stutor_core.Repositories;
+﻿using stutor_core.Models.Sql;
 using System.Collections.Generic;
+using stutor_core.Services.Interfaces;
+using stutor_core.Repositories.Interfaces;
 
 namespace stutor_core.Services
 {
-    public class OrderService
+    public class OrderService : IOrderService
     {
-        private readonly OrderRepository _repo;
+        private readonly IOrderRepository _repo;
 
-        public OrderService(ApplicationDbContext context)
+        public OrderService(IOrderRepository repo)
         {
-            _repo = new OrderRepository(context);
+            _repo = repo;
         }
 
         public Order Get(int id)

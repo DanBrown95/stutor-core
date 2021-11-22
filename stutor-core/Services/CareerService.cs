@@ -1,25 +1,22 @@
-﻿using stutor_core.Database;
-using stutor_core.Models.Sql;
-using stutor_core.Repositories;
-using System;
+﻿using stutor_core.Models.Sql;
+using stutor_core.Repositories.Interfaces;
+using stutor_core.Services.Interfaces;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace stutor_core.Services
 {
-    public class CareerService
+    public class CareerService : ICareerService
     {
-        private readonly CareerRepository _repo;
+        private readonly ICareerRepository _careerRepository;
 
-        public CareerService(ApplicationDbContext context)
+        public CareerService(ICareerRepository repo)
         {
-            _repo = new CareerRepository(context);
+            _careerRepository = repo;
         }
 
         public IEnumerable<AvailableJob> GetAllAvailableJobs()
         {
-            return _repo.GetAllAvailableJobs();
+            return _careerRepository.GetAllAvailableJobs();
         }
     }
 }

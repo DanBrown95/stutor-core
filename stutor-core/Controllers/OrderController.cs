@@ -2,19 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
 using Microsoft.Extensions.Options;
 using Serilog;
 using stutor_core.Configurations;
 using stutor_core.Database;
-using stutor_core.Models;
 using stutor_core.Models.Enumerations;
 using stutor_core.Models.Sql;
 using stutor_core.Models.ViewModels;
-using stutor_core.Repositories;
-using stutor_core.Services;
 using stutor_core.Services.Controllers;
 using stutor_core.Services.Interfaces;
 using stutor_core.Utilities;
@@ -26,23 +21,23 @@ namespace stutor_core.Controllers
     [ApiController]
     public class OrderController : Controller
     {
-        private readonly ApplicationDbContext _db;
-        private readonly OrderService _orderService;
-        private readonly IEmailService _emailService;
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly ApplicationDbContext _dbContext;
         private readonly SMSSettings _smsSettings;
-        private readonly ExpertService _expertService;
+        private readonly IOrderService _orderService;
+        private readonly IEmailService _emailService;
+        private readonly IExpertService _expertService;
+        private readonly IDictionaryService _dictionaryService;
 
         private readonly decimal serviceFee = 2.50M;
 
-        public OrderController(ApplicationDbContext db, IEmailService emailService, IHostingEnvironment hostingEnvironment, IOptions<SMSSettings> smsSettings)
+        public OrderController(ApplicationDbContext dbContext, IEmailService emailService, IOptions<SMSSettings> smsSettings, IOrderService orderService, IExpertService expertService, IDictionaryService dictionaryService)
         {
-            _db = db;
-            _orderService = new OrderService(_db);
-            _emailService = emailService;
+            _dbContext = dbContext;
             _smsSettings = smsSettings.Value;
-            _hostingEnvironment = hostingEnvironment;
-            _expertService = new ExpertService(_db);
+            _orderService = orderService;
+            _emailService = emailService;
+            _expertService = expertService;
+            _dictionaryService = dictionaryService;
         }
 
         [HttpPost]
@@ -54,8 +49,7 @@ namespace stutor_core.Controllers
             // need to store the order, then use the id to create the OrderPasskey object in the db
             if (orderId > 0)
             {
-                var dictionaryRepo = new DictionaryRepository(_db);
-                var unhashed = dictionaryRepo.GetRandomWord();
+                var unhashed = _dictionaryService.GetRandomWord();
 
                 var hashed = PasskeySecurity.Hash(unhashed);
                 var orderPasskey = new OrderPasskey() { OrderId = orderId, ClientPasskey = hashed };
@@ -63,7 +57,7 @@ namespace stutor_core.Controllers
 
                 if (result > 0) // Order passkey has been created. Send confirmation text and email
                 {
-                    var user = _db.User.FirstOrDefault(u => u.Id == vm.UserId);
+                    var user = _dbContext.User.FirstOrDefault(u => u.Id == vm.UserId);
                     try
                     {
                         _emailService.SendOrderConfirmationEmail(user.Firstname, user.Email, unhashed, vm.FriendlySubmitted, orderId, vm.Price, vm.Charge, serviceFee, vm.TopicName);

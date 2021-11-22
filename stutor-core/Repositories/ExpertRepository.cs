@@ -7,17 +7,13 @@ using stutor_core.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using stutor_core.Repositories.Interfaces;
 
 namespace stutor_core.Repositories
 {
-    public class ExpertRepository
+    public class ExpertRepository : BaseRepository, IExpertRepository
     {
-        private ApplicationDbContext _context { get; set; }
-
-        public ExpertRepository(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+        public ExpertRepository(ApplicationDbContext context) : base(context) { }
 
         public Expert Get(string id)
         {
@@ -43,7 +39,7 @@ namespace stutor_core.Repositories
         public TopicExpertsReturnVM GetTopicExpertsByTopicId(SelectedTopicVM selectedTopicVm)
         {
             Random rnd = new Random();
-            var sc = new StripeController();
+            var sc = new StripeService();
 
             TopicExpertsReturnVM result = new TopicExpertsReturnVM();
             result.LocalExperts = _context.TopicExpert.Where(e => e.TopicId == selectedTopicVm.TopicId // Retrieve experts on topicId

@@ -3,17 +3,13 @@ using stutor_core.Database;
 using stutor_core.Models.Sql;
 using System.Collections.Generic;
 using System.Linq;
+using stutor_core.Repositories.Interfaces;
 
 namespace stutor_core.Repositories
 {
-    public class CategoryRepository
+    public class CategoryRepository : BaseRepository, ICategoryRepository
     {
-        private ApplicationDbContext _context { get; set; }
-
-        public CategoryRepository(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+        public CategoryRepository(ApplicationDbContext context) : base(context) { }
 
         public void Add(Category cat)
         {

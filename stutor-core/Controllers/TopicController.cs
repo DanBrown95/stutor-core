@@ -1,12 +1,9 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using stutor_core.Models;
 using System.Collections.Generic;
-using stutor_core.Services;
-using stutor_core.Database;
 using stutor_core.Models.Sql;
+using stutor_core.Services.Interfaces;
 
 namespace stutor_core.Controllers
 {
@@ -14,11 +11,11 @@ namespace stutor_core.Controllers
     [ApiController]
     public class TopicController : Controller
     {
-        private readonly TopicService _topicService;
+        private readonly ITopicService _topicService;
 
-        public TopicController(ApplicationDbContext db)
+        public TopicController(ITopicService topicService)
         {
-            _topicService = new TopicService(db);
+            _topicService = topicService;
         }
 
         [HttpPost]

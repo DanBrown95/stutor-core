@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using stutor_core.Database;
 using stutor_core.Models.Sql;
-using stutor_core.Services;
 using System.Collections.Generic;
+using stutor_core.Services.Interfaces;
 
 namespace stutor_core.Controllers
 {
@@ -11,11 +10,11 @@ namespace stutor_core.Controllers
     public class DisplayUtilsController : Controller
     {
 
-        private TimezoneService _timezoneService;
+        private ITimezoneService _timezoneService;
         
-        public DisplayUtilsController(ApplicationDbContext db)
+        public DisplayUtilsController(ITimezoneService timezoneService)
         {
-            _timezoneService = new TimezoneService(db);
+            _timezoneService = timezoneService;
         }
 
         [HttpGet]

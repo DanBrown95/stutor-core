@@ -1,17 +1,17 @@
-﻿using stutor_core.Database;
-using stutor_core.Models.Sql;
-using stutor_core.Repositories;
+﻿using stutor_core.Models.Sql;
 using System.Collections.Generic;
+using stutor_core.Services.Interfaces;
+using stutor_core.Repositories.Interfaces;
 
 namespace stutor_core.Services
 {
-    public class CategoryService
+    public class CategoryService : ICategoryService
     {
-        private readonly CategoryRepository _repo;
+        private readonly ICategoryRepository _repo;
 
-        public CategoryService(ApplicationDbContext context)
+        public CategoryService(ICategoryRepository repo)
         {
-            _repo = new CategoryRepository(context);
+            _repo = repo;
         }
 
         public Category Get(int id)

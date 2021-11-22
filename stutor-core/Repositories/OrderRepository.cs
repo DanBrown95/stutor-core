@@ -1,21 +1,16 @@
-﻿using Microsoft.EntityFrameworkCore;
-using stutor_core.Database;
+﻿using stutor_core.Database;
 using stutor_core.Models.Enumerations;
 using stutor_core.Models.Sql;
 using stutor_core.Utilities;
 using System.Collections.Generic;
 using System.Linq;
+using stutor_core.Repositories.Interfaces;
 
 namespace stutor_core.Repositories
 {
-    public class OrderRepository
+    public class OrderRepository : BaseRepository, IOrderRepository
     {
-        private ApplicationDbContext _context { get; set; }
-
-        public OrderRepository(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+        public OrderRepository(ApplicationDbContext context) : base(context) { }
 
         public Order Get(int ID)
         {

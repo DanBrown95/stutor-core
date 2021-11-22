@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
-using stutor_core.Database;
 using stutor_core.Models.Sql;
-using stutor_core.Services;
+using stutor_core.Services.Interfaces;
 
 namespace stutor_core.Controllers
 {
@@ -13,11 +9,11 @@ namespace stutor_core.Controllers
     [ApiController]
     public class CategoryController : Controller
     {
-        private readonly CategoryService _categoryService;
+        private readonly ICategoryService _categoryService;
 
-        public CategoryController(ApplicationDbContext db)
+        public CategoryController(ICategoryService categoryService)
         {
-            _categoryService = new CategoryService(db);
+            _categoryService = categoryService;
         }
 
         [HttpGet]

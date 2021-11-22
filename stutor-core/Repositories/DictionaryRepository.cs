@@ -1,21 +1,16 @@
 ﻿using stutor_core.Database;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using System.Security.Cryptography;
-using System.Text;
+using stutor_core.Repositories.Interfaces;
 
 namespace stutor_core.Repositories
 {
-    public class DictionaryRepository
+    public class DictionaryRepository : BaseRepository, IDictionaryRepository
     {
-        private ApplicationDbContext _context { get; set; }
         private static Random rand;
 
-        public DictionaryRepository(ApplicationDbContext context)
+        public DictionaryRepository(ApplicationDbContext context) : base(context)
         {
-            _context = context;
             rand = new Random();
         }
 

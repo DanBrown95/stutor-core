@@ -3,17 +3,13 @@ using stutor_core.Models;
 using stutor_core.Models.Sql;
 using System.Collections.Generic;
 using System.Linq;
+using stutor_core.Repositories.Interfaces;
 
 namespace stutor_core.Repositories
 {
-    public class TopicRepository
+    public class TopicRepository : BaseRepository, ITopicRepository
     {
-        private ApplicationDbContext _context { get; set; }
-
-        public TopicRepository(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+        public TopicRepository(ApplicationDbContext context) : base(context) { }
 
         public void Add(Topic top)
         {

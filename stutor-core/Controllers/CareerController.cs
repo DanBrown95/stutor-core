@@ -1,11 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using stutor_core.Database;
 using stutor_core.Models.Sql;
-using stutor_core.Services;
-using System;
+using stutor_core.Services.Interfaces;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace stutor_core.Controllers
 {
@@ -13,11 +9,11 @@ namespace stutor_core.Controllers
     [ApiController]
     public class CareerController : ControllerBase
     {
-        private readonly CareerService _careerService;
+        private readonly ICareerService _careerService;
 
-        public CareerController(ApplicationDbContext db)
+        public CareerController(ICareerService careerService)
         {
-            _careerService = new CareerService(db);
+            _careerService = careerService;
         }
 
         [HttpGet]
