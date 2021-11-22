@@ -1,21 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using Serilog;
 using stutor_core.Configurations;
 using stutor_core.Database;
 using stutor_core.Models;
 using stutor_core.Models.Sql;
 using stutor_core.Models.ViewModels;
-using stutor_core.Repositories;
 using stutor_core.Services;
 
 namespace stutor_core.Controllers
@@ -25,14 +18,18 @@ namespace stutor_core.Controllers
     public class ExpertController : Controller
     {
         private ExpertService _expertService;
+        private OrderService _orderService;
         private ApplicationDbContext _db;
         private AWSS3Service _awsS3Service;
+        private TimezoneService _timezoneService;
 
         public ExpertController(ApplicationDbContext db, AWSS3Settings S3Settings)
         {
             _db = db;
             _expertService = new ExpertService(_db);
             _awsS3Service = new AWSS3Service(S3Settings);
+            _orderService = new OrderService(_db);
+            _timezoneService = new TimezoneService(_db);
         }
 
         [HttpPost]
@@ -88,7 +85,7 @@ namespace stutor_core.Controllers
         [HttpPost]
         public Timezone ExpertTimezone([FromBody] string userId)
         {
-            return new TimezoneService(_db).GetByUserId(userId);
+            return _timezoneService.GetByUserId(userId);
         }
 
         [HttpPost]
@@ -100,8 +97,7 @@ namespace stutor_core.Controllers
         [HttpPost]
         public IEnumerable<Order> OrdersByUserId([FromBody] string userId)
         {
-            OrderService orderService = new OrderService(_db);
-            return orderService.GetExpertOrdersByUserId(userId);
+            return _orderService.GetExpertOrdersByUserId(userId);
         }
 
         [HttpPost]
@@ -146,6 +142,12 @@ namespace stutor_core.Controllers
         {
             bool result = _expertService.UpdateTopicExpertSpecialties(vm.TopicExpertId, vm.SpecialtyIds);
             return Json(new { success = result });
+        }
+
+        [HttpPost]
+        public bool HasIncompleteOrders([FromBody] string userId)
+        {
+            return _expertService.HasIncompleteOrders(userId);
         }
     }
 }

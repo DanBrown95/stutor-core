@@ -30,10 +30,10 @@ namespace stutor_core.Services
             return _repo.GetExpertTopicsByUserId(userId);
         }
 
-        public IEnumerable<Order> GetExpertOrdersByUserId(string userId)
-        {
-            return _repo.GetExpertOrdersByUserId(userId);
-        }
+        //public IEnumerable<Order> GetExpertOrdersByUserId(string userId)
+        //{
+        //    return _repo.GetExpertOrdersByUserId(userId);
+        //}
 
         public TopicExpertsReturnVM GetTopicExpertsByTopicId(SelectedTopicVM selectedTopicVm)
         {
@@ -78,6 +78,11 @@ namespace stutor_core.Services
         public bool UpdateTopicExpertSpecialties(int topicExpertId, int[] specialtyIds)
         {
             return _repo.UpdateTopicExpertSpecialties(topicExpertId, specialtyIds);
+        }
+
+        public bool HasIncompleteOrders(string userId)
+        {
+            return _repo.HasIncompleteOrders(userId);
         }
     }
 }

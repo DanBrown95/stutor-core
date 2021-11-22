@@ -35,10 +35,10 @@ namespace stutor_core.Repositories
             return e;
         }
 
-        public IEnumerable<Order> GetExpertOrdersByUserId(string userId)
-        {
-            return _context.Order.Where(o => o.ExpertId == o.Expert.Id && o.Expert.UserId == userId).Include(x => x.Topic);
-        }
+        //public IEnumerable<Order> GetExpertOrdersByUserId(string userId)
+        //{
+        //    return _context.Order.Where(o => o.ExpertId == o.Expert.Id && o.Expert.UserId == userId).Include(x => x.Topic);
+        //}
 
         public TopicExpertsReturnVM GetTopicExpertsByTopicId(SelectedTopicVM selectedTopicVm)
         {
@@ -159,6 +159,11 @@ namespace stutor_core.Repositories
                 _context.SaveChanges();
             }
             return true;
+        }
+
+        public bool HasIncompleteOrders(string userId)
+        {
+            return _context.Order.Where(x => x.Expert.UserId == userId && x.Status == Models.Enumerations.OrderStatus.Unanswered).Count() > 0;
         }
     }
 }
