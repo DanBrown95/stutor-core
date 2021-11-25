@@ -45,8 +45,8 @@ namespace stutor_core.Repositories
             result.LocalExperts = _context.TopicExpert.Where(e => e.TopicId == selectedTopicVm.TopicId // Retrieve experts on topicId
                                                 && e.IsActive // Ensure they haven't revoked their status for that topic
                                                 && e.Expert.Timezone.TZName == selectedTopicVm.UserTimezone 
-                                                && e.Expert.IsActive
                                                 && e.Expert.UserId != selectedTopicVm.RequestingUserId
+                                                && e.Expert.IsActive
                                                 && AvailabilityParser.IsAvailable(e.Availability, e.Expert.Timezone.TZName)
                                                 && sc.CustomerHasSources(e.Expert.User.CustomerId) == true
                                                 // where timezones match, where available and experts who have payment methods stored on their stripe account
@@ -58,8 +58,8 @@ namespace stutor_core.Repositories
                 result.DistantExperts = _context.TopicExpert.Where(e => e.TopicId == selectedTopicVm.TopicId // Retrieve experts on topicId
                                                 && e.IsActive // Ensure they haven't revoked their status for that topic
                                                 && e.Expert.Timezone.TZName != selectedTopicVm.UserTimezone 
-                                                && e.Expert.IsActive
                                                 && e.Expert.UserId != selectedTopicVm.RequestingUserId
+                                                && e.Expert.IsActive
                                                 && AvailabilityParser.IsAvailable(e.Availability, e.Expert.Timezone.TZName) // where currently available and not in the same timezone
                                                 && sc.CustomerHasSources(e.Expert.User.CustomerId) == true
                                                 ).Include(x => x.TopicExpertSpecialty).GroupBy(g => g.Rating) // group by rating

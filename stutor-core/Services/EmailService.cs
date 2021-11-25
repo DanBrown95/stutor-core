@@ -30,6 +30,9 @@ namespace stutor_core.Services
             _configuration = configuration;
         }
 
+        /// <remarks>
+        /// Uses AWS SES to send the contact us page form emails
+        /// </remarks>
         public async Task<HttpStatusCode> SendContactUsEmail(ContactForm details)
         {
             var receiver = _configuration["AWSSES:SupportEmail"];
@@ -76,6 +79,10 @@ namespace stutor_core.Services
             return HttpStatusCode.OK;
         }
 
+        [Obsolete("No longer used. Please use SendOrderConfirmationEmail()")]
+        /// <remarks>
+        /// Uses AWS SES to send emails.
+        /// </remarks>
         public void SendPasskeyEmail(PasskeyEmail vm)
         {
             try
@@ -123,6 +130,9 @@ namespace stutor_core.Services
             }
         }
 
+        /// <remarks>
+        /// Uses the SendInBlue api to send order confirmation emails to a user.
+        /// </remarks>
         public void SendOrderConfirmationEmail(string customerFirstname, string customerEmail, string passkey, string date, int orderId, decimal price, decimal charge, decimal serviceFee, string topic)
         {
             Configuration.Default.ApiKey.Add("api-key", "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");
