@@ -17,7 +17,7 @@ namespace stutor_core.Repositories
 
         public Expert Get(string id)
         {
-           return _context.Expert.FirstOrDefault(e => e.Id == id);
+           return _context.Expert.Where(e => e.Id == id).Include(x => x.User).FirstOrDefault();
         }
 
         public decimal GetExpertPrice(string expertId, int topicId)

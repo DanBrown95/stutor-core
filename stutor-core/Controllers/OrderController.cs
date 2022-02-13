@@ -78,6 +78,18 @@ namespace stutor_core.Controllers
                         Log.Error("Failed to send order confirmation text to ordering user phone {phone}", user.Phone);
                     }
 
+                    
+                    // Send the services request email to the expert
+                    try
+                    {
+                        var expert = _expertService.Get(vm.ExpertId);
+                        _emailService.SendExpertRequestEmail(expert.User.Email, vm.TopicName);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error("Failed to send services request email to expert. {error}", ex.Message);
+                    }
+
                     //Send the text message to the expert
                     string expertPhone = "";
                     try

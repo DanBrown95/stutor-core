@@ -135,7 +135,8 @@ namespace stutor_core.Services
         /// </remarks>
         public void SendOrderConfirmationEmail(string customerFirstname, string customerEmail, string passkey, string date, int orderId, decimal price, decimal charge, decimal serviceFee, string topic)
         {
-            Configuration.Default.ApiKey.Add("api-key", "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");
+            var key = _configuration["SendInBlue:api-key"];
+            Configuration.Default.ApiKey.Add("api-key", key);
 
             var apiInstance = new TransactionalEmailsApi();
             SendSmtpEmailTo smtpEmailTo = new SendSmtpEmailTo(customerEmail, customerFirstname);
@@ -145,15 +146,6 @@ namespace stutor_core.Services
             string ReplyToName = "noreply";
             string ReplyToEmail = "noreply@stutor.us";
             SendSmtpEmailReplyTo ReplyTo = new SendSmtpEmailReplyTo(ReplyToEmail, ReplyToName);
-
-            //string AttachmentUrl = null;
-            //string stringInBase64 = "aGVsbG8gdGhpcyBpcyB0ZXN0";
-            //byte[] Content = System.Convert.FromBase64String(stringInBase64);
-            //string AttachmentName = "test.txt";
-            //SendSmtpEmailAttachment AttachmentContent = new SendSmtpEmailAttachment(AttachmentUrl, Content, AttachmentName);
-            //List<SendSmtpEmailAttachment> Attachment = new List<SendSmtpEmailAttachment>();
-            //Attachment.Add(AttachmentContent);
-
 
             long? TemplateId = (long)1;
             JObject Params = new JObject();
@@ -180,6 +172,45 @@ namespace stutor_core.Services
             catch (Exception e)
             {
                 Log.Error("Failed to send order confirmation email through sendinblue. {Message}", e.Message);
+            }
+        }
+
+        /// <remarks>
+        /// Uses the SendInBlue api to send a request for service email to the expert.
+        /// </remarks>
+        public void SendExpertRequestEmail(string expertEmail, string topic)
+        {
+            var key = _configuration["SendInBlue:api-key"];
+            Configuration.Default.ApiKey.Add("api-key", key);
+
+            var apiInstance = new TransactionalEmailsApi();
+            SendSmtpEmailTo smtpEmailTo = new SendSmtpEmailTo(expertEmail);
+            List<SendSmtpEmailTo> To = new List<SendSmtpEmailTo>();
+            To.Add(smtpEmailTo);
+
+            string ReplyToName = "noreply";
+            string ReplyToEmail = "noreply@stutor.us";
+            SendSmtpEmailReplyTo ReplyTo = new SendSmtpEmailReplyTo(ReplyToEmail, ReplyToName);
+
+            long? TemplateId = 3;
+            JObject Params = new JObject();
+            Params.Add("topic", topic);
+
+            List<string> Tags = new List<string>();
+            Tags.Add("stutor");
+            Tags.Add("request");
+            Tags.Add("services");
+            Tags.Add("important");
+            Tags.Add("attention");
+
+            try
+            {
+                var sendSmtpEmail = new SendSmtpEmail(null, To, null, null, null, null, null, ReplyTo, null, null, TemplateId, Params, null, Tags);
+                CreateSmtpEmail result = apiInstance.SendTransacEmail(sendSmtpEmail);
+            }
+            catch (Exception e)
+            {
+                Log.Error("Failed to send expert request email through sendinblue. {error}", e.Message);
             }
         }
     }
