@@ -18,14 +18,14 @@ namespace stutor_core.Controllers
     {
         private IExpertService _expertService;
         private IOrderService _orderService;
-        private ITimezoneService _timezoneService;
+        private ILocationService _locationService;
         private AWSS3Service _awsS3Service;
 
-        public ExpertController(AWSS3Settings S3Settings, IExpertService expertService, IOrderService orderService, ITimezoneService timezoneService)
+        public ExpertController(AWSS3Settings S3Settings, IExpertService expertService, IOrderService orderService, ILocationService locationService)
         {
             _expertService = expertService;
             _orderService = orderService;
-            _timezoneService = timezoneService;
+            _locationService = locationService;
             _awsS3Service = new AWSS3Service(S3Settings);
         }
 
@@ -55,7 +55,9 @@ namespace stutor_core.Controllers
             var application = new ExpertApplication{
                 UserId = formData.UserId,
                 TopicId = formData.TopicId,
-                TimezoneId = formData.TimezoneId,
+                Address = formData.Location.Address,
+                Longitude = formData.Location.Coords.Lng,
+                Latitude = formData.Location.Coords.Lat,
                 WebsiteUrl = formData.WebsiteUrl,
                 LinkedinUrl = formData.LinkedinUrl,
                 Certifications = formData.Certifications,
@@ -80,9 +82,16 @@ namespace stutor_core.Controllers
         }
 
         [HttpPost]
+        [Obsolete("not used now that we use lat long and not timezones for locations")]
         public Timezone ExpertTimezone([FromBody] string userId)
         {
-            return _timezoneService.GetByUserId(userId);
+            return _locationService.GetTimezoneByUserId(userId);
+        }
+
+        [HttpPost]
+        public LocationData ExpertLocation([FromBody] string userId)
+        {
+            return _locationService.GetLocationByUserId(userId);
         }
 
         [HttpPost]
@@ -116,9 +125,16 @@ namespace stutor_core.Controllers
         }
 
         [HttpPost]
+        [Obsolete("No longer valid since we dont store timezone names since we switched to lat long")]
         public bool UpdateTimezone([FromBody] UpdateTimezone vm)
         {
             return _expertService.UpdateTimezone(vm.UserId, vm.TimezoneId);
+        }
+
+        [HttpPost]
+        public bool UpdateLocation([FromBody] UpdateLocation vm)
+        {
+            return _expertService.UpdateLocation(vm.UserId, vm.location);
         }
 
         [HttpPost]

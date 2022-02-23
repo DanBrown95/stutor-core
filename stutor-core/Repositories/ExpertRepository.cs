@@ -8,12 +8,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using stutor_core.Repositories.Interfaces;
+using System.Data;
+using Dapper;
+using Microsoft.Extensions.Configuration;
+using stutor_core.Models.Sql.customTypes;
 
 namespace stutor_core.Repositories
 {
     public class ExpertRepository : BaseRepository, IExpertRepository
     {
-        public ExpertRepository(ApplicationDbContext context) : base(context) { }
+        public ExpertRepository(ApplicationDbContext context, IConfiguration config) : base(context,  config) { }
 
         public Expert Get(string id)
         {
@@ -39,36 +43,45 @@ namespace stutor_core.Repositories
         public TopicExpertsReturnVM GetTopicExpertsByTopicId(SelectedTopicVM selectedTopicVm)
         {
             Random rnd = new Random();
-            var sc = new StripeService();
+            var stripeService = new StripeService();
 
             TopicExpertsReturnVM result = new TopicExpertsReturnVM();
-            result.LocalExperts = _context.TopicExpert.Where(e => e.TopicId == selectedTopicVm.TopicId // Retrieve experts on topicId
-                                                && e.IsActive // Ensure they haven't revoked their status for that topic
-                                                && e.Expert.Timezone.TZName == selectedTopicVm.UserTimezone 
-                                                && e.Expert.UserId != selectedTopicVm.RequestingUserId
-                                                && e.Expert.IsActive
-                                                && AvailabilityParser.IsAvailable(e.Availability, e.Expert.Timezone.TZName)
-                                                && sc.CustomerHasSources(e.Expert.User.CustomerId) == true
-                                                // where timezones match, where available and experts who have payment methods stored on their stripe account
-                                                ).Include(x => x.TopicExpertSpecialty).GroupBy(g => g.Rating) // group by rating
-                                                .Select(x => x.ElementAt(rnd.Next(0, x.Count()))).ToList(); // randomly select 1 expert with each rating
+            var param = new DynamicParameters();
+            param.Add("@TopicId", selectedTopicVm.TopicId, dbType: DbType.Int32);
+            param.Add("@UserId", selectedTopicVm.RequestingUserId, dbType: DbType.String);
+            param.Add("@Lat", selectedTopicVm.UserCoordinates.Lat, dbType: DbType.Decimal);
+            param.Add("@Lng", selectedTopicVm.UserCoordinates.Lng, dbType: DbType.Decimal);
+            param.Add("@Radius", 100, dbType: DbType.Int32);
 
-            if (result.LocalExperts.Count() < 3) // if there are few results try opening up the criteria to more timezones.
+            using (var db = DBConnection())
             {
-                result.DistantExperts = _context.TopicExpert.Where(e => e.TopicId == selectedTopicVm.TopicId // Retrieve experts on topicId
-                                                && e.IsActive // Ensure they haven't revoked their status for that topic
-                                                && e.Expert.Timezone.TZName != selectedTopicVm.UserTimezone 
-                                                && e.Expert.UserId != selectedTopicVm.RequestingUserId
-                                                && e.Expert.IsActive
-                                                && AvailabilityParser.IsAvailable(e.Availability, e.Expert.Timezone.TZName) // where currently available and not in the same timezone
-                                                && sc.CustomerHasSources(e.Expert.User.CustomerId) == true
-                                                ).Include(x => x.TopicExpertSpecialty).GroupBy(g => g.Rating) // group by rating
-                                                .Select(x => x.ElementAt(rnd.Next(0, x.Count()))).ToList(); // randomly select 1 expert with each rating
+                result.LocalExperts = db.Query<TopicExpertsByTopic>("spExpertsByGeographicalCoordinatesGet", param, commandType: CommandType.StoredProcedure)
+                                      .Where(e => AvailabilityParser.IsAvailable(e.Availability, new Coordinates() { Lat = e.Latitude, Lng = e.Longitude })
+                                                                 && stripeService.CustomerHasSources(e.CustomerId))
+                                      .GroupBy(g => g.Rating)
+                                      .Select(x => x.ElementAt(rnd.Next(0, x.Count())))
+                                      .ToList();
+            }
+
+            if (result.LocalExperts.Count() < 3) // if there are few results try opening up the criteria to a larger radius.
+            {
+                using (var db = DBConnection())
+                {
+                    param.Add("@Radius", 500, dbType: DbType.Int32); // increase radius to 500miles
+
+                    result.DistantExperts = db.Query<TopicExpertsByTopic>("spExpertsByGeographicalCoordinatesGet", param, commandType: CommandType.StoredProcedure)
+                                          .Where(e => AvailabilityParser.IsAvailable(e.Availability, new Coordinates() { Lat = e.Latitude, Lng = e.Longitude }) 
+                                                                     && stripeService.CustomerHasSources(e.CustomerId))
+                                          .GroupBy(g => g.Rating)
+                                          .Select(x => x.ElementAt(rnd.Next(0, x.Count())))
+                                          .ToList();
+                }
             }
 
             // Retrieve expert specialties
             foreach (var ex in result.DistantExperts)
             {
+                ex.TopicExpertSpecialty = _context.TopicExpertSpecialty.Where(x => x.TopicExpertId == ex.Id).ToList();
                 foreach (var sp in ex.TopicExpertSpecialty)
                 {
                     sp.Specialty = _context.Specialty.FirstOrDefault(x => x.Id == sp.SpecialtyId);
@@ -77,6 +90,7 @@ namespace stutor_core.Repositories
 
             foreach (var ex in result.LocalExperts)
             {
+                ex.TopicExpertSpecialty = _context.TopicExpertSpecialty.Where(x => x.TopicExpertId == ex.Id).ToList();
                 foreach (var sp in ex.TopicExpertSpecialty)
                 {
                     sp.Specialty = _context.Specialty.FirstOrDefault(x => x.Id == sp.SpecialtyId);
@@ -106,10 +120,20 @@ namespace stutor_core.Repositories
             return (_context.SaveChanges() == 1) ? !isActive : isActive;
         }
 
+        [Obsolete("No longer valid since we dont store timezone names since we switched to lat long")]
         public bool UpdateTimezone(string userId, int timezoneId)
         {
             var record = _context.Expert.FirstOrDefault(x => x.UserId == userId);
             record.TimezoneId = timezoneId;
+            return _context.SaveChanges() == 1;
+        }
+
+        public bool UpdateLocation(string userId, LocationData location)
+        {
+            var record = _context.Expert.FirstOrDefault(x => x.UserId == userId);
+            record.Address = location.Address;
+            record.Latitude = location.Coords.Lat;
+            record.Longitude = location.Coords.Lng;
             return _context.SaveChanges() == 1;
         }
 

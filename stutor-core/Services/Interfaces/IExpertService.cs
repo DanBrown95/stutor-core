@@ -21,6 +21,8 @@ namespace stutor_core.Services.Interfaces
         int Register(ExpertApplication application);
 
         bool UpdateTimezone(string userId, int timezoneId);
+        
+        bool UpdateLocation(string userId, LocationData location);
 
         string GetPhoneById(string expertId);
 

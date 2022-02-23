@@ -1,9 +1,10 @@
 ﻿using stutor_core.Models.Sql;
+using stutor_core.Models.ViewModels;
 using System.Collections.Generic;
 
 namespace stutor_core.Services.Interfaces
 {
-    public interface ITimezoneService
+    public interface ILocationService
     {
         Timezone Get(int id);
 
@@ -11,6 +12,8 @@ namespace stutor_core.Services.Interfaces
 
         void Add(Timezone timezone);
 
-        Timezone GetByUserId(string id);
+        Timezone GetTimezoneByUserId(string id);
+
+        LocationData GetLocationByUserId(string id);
     }
 }

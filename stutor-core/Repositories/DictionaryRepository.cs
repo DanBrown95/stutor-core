@@ -2,6 +2,7 @@
 using System;
 using System.Linq;
 using stutor_core.Repositories.Interfaces;
+using Microsoft.Extensions.Configuration;
 
 namespace stutor_core.Repositories
 {
@@ -9,7 +10,7 @@ namespace stutor_core.Repositories
     {
         private static Random rand;
 
-        public DictionaryRepository(ApplicationDbContext context) : base(context)
+        public DictionaryRepository(ApplicationDbContext context, IConfiguration config) : base(context, config)
         {
             rand = new Random();
         }

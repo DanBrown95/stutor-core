@@ -28,8 +28,20 @@ namespace stutor_core.Models.ViewModels
         
         public int YearsOfExperience { get; set; }
         
-        public int? TimezoneId { get; set; }
+        public LocationData Location { get; set; }
 
         public string Specialties { get; set; }
+    }
+
+    public class LocationData
+    {
+        public string Address { get; set; }
+        public Coordinates Coords { get; set; }
+    }
+
+    public class Coordinates
+    {
+        public decimal Lat { get; set; }
+        public decimal Lng { get; set; }
     }
 }

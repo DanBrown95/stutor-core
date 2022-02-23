@@ -19,8 +19,11 @@ namespace stutor_core.Models.Sql
         [Required, MaxLength(200)]
         public string Availability { get; set; }
 
-        [Required, ForeignKey(nameof(Timezone))]
-        public int? TimezoneId { get; set; }
+        public string Address { get; set; }
+
+        public decimal Latitude { get; set; }
+
+        public decimal Longitude { get; set; }
 
         [MaxLength(200)]
         public string LinkedinUrl { get; set; }

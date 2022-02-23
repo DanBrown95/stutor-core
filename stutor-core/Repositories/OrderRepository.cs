@@ -5,12 +5,13 @@ using stutor_core.Utilities;
 using System.Collections.Generic;
 using System.Linq;
 using stutor_core.Repositories.Interfaces;
+using Microsoft.Extensions.Configuration;
 
 namespace stutor_core.Repositories
 {
     public class OrderRepository : BaseRepository, IOrderRepository
     {
-        public OrderRepository(ApplicationDbContext context) : base(context) { }
+        public OrderRepository(ApplicationDbContext context, IConfiguration config) : base(context, config) { }
 
         public Order Get(int ID)
         {

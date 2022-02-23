@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using stutor_core.Services.Interfaces;
 using stutor_core.Repositories.Interfaces;
+using stutor_core.Models.ViewModels;
 
 namespace stutor_core.Services
 {
-    public class TimezoneService : ITimezoneService
+    public class LocationService : ILocationService
     {
-        private readonly ITimezoneRepository _repo;
+        private readonly ILocationRepository _repo;
 
-        public TimezoneService(ITimezoneRepository repo)
+        public LocationService(ILocationRepository repo)
         {
             _repo = repo;
         }
@@ -17,6 +18,11 @@ namespace stutor_core.Services
         public Timezone Get(int id)
         {
             return _repo.Get(id);
+        }
+
+        public LocationData GetLocationByUserId (string id)
+        {
+            return _repo.GetLocationByUserId(id);
         }
 
         public IEnumerable<Timezone> GetAll()
@@ -29,9 +35,9 @@ namespace stutor_core.Services
             _repo.Add(timezone);
         }
 
-        public Timezone GetByUserId(string id)
+        public Timezone GetTimezoneByUserId(string id)
         {
-            return _repo.GetByUserId(id);
+            return _repo.GetTimezoneByUserId(id);
         }
     }
 }

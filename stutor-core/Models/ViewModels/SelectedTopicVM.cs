@@ -3,7 +3,7 @@
     public class SelectedTopicVM
     {
         public int TopicId { get; set; }
-        public string UserTimezone { get; set; }
         public string RequestingUserId { get; set; }
+        public Coordinates UserCoordinates { get; set; }
     }
 }

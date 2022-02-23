@@ -16,6 +16,12 @@ namespace stutor_core.Models.Sql
         [Required, ForeignKey(nameof(Timezone))]
         public int TimezoneId { get; set; }
 
+        public string Address { get; set; }
+
+        public decimal Latitude { get; set; }
+
+        public decimal Longitude { get; set; }
+
         [Required]
         public bool IsActive { get; set; }
 

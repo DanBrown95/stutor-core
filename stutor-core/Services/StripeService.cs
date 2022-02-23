@@ -7,7 +7,7 @@ namespace stutor_core.Services
     {
         public bool CustomerHasSources(string customerId)
         {
-            if(customerId == null)
+            if(string.IsNullOrEmpty(customerId))
             {
                 return false;
             }

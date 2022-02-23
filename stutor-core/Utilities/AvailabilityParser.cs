@@ -1,22 +1,22 @@
-﻿using Newtonsoft.Json;
-using NodaTime;
+﻿using GeoTimeZone;
+using Newtonsoft.Json;
+using stutor_core.Models.ViewModels;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using TimeZoneConverter;
-using TimeZoneNames;
 
 namespace stutor_core.Utilities
 {
     public static class AvailabilityParser
     {
-        public static bool IsAvailable(string availability, string expertTzName)
+        public static bool IsAvailable(string availability, Coordinates coords)
         {
             var result = false;
 
             var parsed = JsonConvert.DeserializeObject<AvailablityDisplay>(availability);
 
-            TimeZoneInfo tzi = TZConvert.GetTimeZoneInfo(expertTzName);
+            string tzIana = TimeZoneLookup.GetTimeZone((double)coords.Lat, (double)coords.Lng).Result;
+            TimeZoneInfo tzi = TZConvert.GetTimeZoneInfo(tzIana);
             var expertDateTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById(tzi.Id));
 
             var currentDayForExpert = expertDateTime.DayOfWeek.ToString().Substring(0,3).ToLower();

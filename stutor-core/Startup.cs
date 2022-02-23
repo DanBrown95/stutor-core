@@ -88,8 +88,8 @@ namespace stutor_core
             services.AddScoped<IExpertRepository, ExpertRepository>();
             services.AddScoped<IOrderService, Services.OrderService>();
             services.AddScoped<IOrderRepository, OrderRepository>();
-            services.AddScoped<ITimezoneService, TimezoneService>();
-            services.AddScoped<ITimezoneRepository, TimezoneRepository>();
+            services.AddScoped<ILocationService, LocationService>();
+            services.AddScoped<ILocationRepository, LocationRepository>();
             services.AddScoped<ITopicService, TopicService>();
             services.AddScoped<ITopicRepository, TopicRepository>();
             services.AddScoped<IUserService, UserService>();

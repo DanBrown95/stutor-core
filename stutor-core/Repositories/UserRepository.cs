@@ -2,12 +2,13 @@
 using stutor_core.Models.Sql;
 using System.Linq;
 using stutor_core.Repositories.Interfaces;
+using Microsoft.Extensions.Configuration;
 
 namespace stutor_core.Repositories
 {
     public class UserRepository : BaseRepository, IUserRepository
     {
-        public UserRepository(ApplicationDbContext context) : base(context) { }
+        public UserRepository(ApplicationDbContext context, IConfiguration config) : base(context, config) { }
 
         public User Get(string id)
         {

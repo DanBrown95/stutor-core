@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using stutor_core.Models.Sql;
+using stutor_core.Models.Sql.customTypes;
 
 namespace stutor_core.Models.ViewModels
 {
@@ -7,11 +7,11 @@ namespace stutor_core.Models.ViewModels
     {
         public TopicExpertsReturnVM()
         {
-            LocalExperts = new List<TopicExpert>();
-            DistantExperts = new List<TopicExpert>();
+            LocalExperts = new List<TopicExpertsByTopic>();
+            DistantExperts = new List<TopicExpertsByTopic>();
         }
 
-        public IEnumerable<TopicExpert> LocalExperts { get; set; }
-        public IEnumerable<TopicExpert> DistantExperts { get; set; }
+        public IEnumerable<TopicExpertsByTopic> LocalExperts { get; set; }
+        public IEnumerable<TopicExpertsByTopic> DistantExperts { get; set; }
     }
 }

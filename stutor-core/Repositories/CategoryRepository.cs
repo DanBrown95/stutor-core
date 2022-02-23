@@ -4,12 +4,13 @@ using stutor_core.Models.Sql;
 using System.Collections.Generic;
 using System.Linq;
 using stutor_core.Repositories.Interfaces;
+using Microsoft.Extensions.Configuration;
 
 namespace stutor_core.Repositories
 {
     public class CategoryRepository : BaseRepository, ICategoryRepository
     {
-        public CategoryRepository(ApplicationDbContext context) : base(context) { }
+        public CategoryRepository(ApplicationDbContext context, IConfiguration config) : base(context, config) { }
 
         public void Add(Category cat)
         {

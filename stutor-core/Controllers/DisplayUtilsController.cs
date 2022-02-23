@@ -10,9 +10,9 @@ namespace stutor_core.Controllers
     public class DisplayUtilsController : Controller
     {
 
-        private ITimezoneService _timezoneService;
+        private ILocationService _timezoneService;
         
-        public DisplayUtilsController(ITimezoneService timezoneService)
+        public DisplayUtilsController(ILocationService timezoneService)
         {
             _timezoneService = timezoneService;
         }
