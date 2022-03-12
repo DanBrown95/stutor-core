@@ -19,8 +19,6 @@ namespace stutor_core.Services.Interfaces
         bool ToggleIsActive(string userId, bool isActive);
 
         int Register(ExpertApplication application);
-
-        bool UpdateTimezone(string userId, int timezoneId);
         
         bool UpdateLocation(string userId, LocationData location);
 

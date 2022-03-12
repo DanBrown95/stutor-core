@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using stutor_core.Models.Sql;
 using stutor_core.Models.ViewModels;
 using stutor_core.Repositories.Interfaces;
@@ -49,12 +48,6 @@ namespace stutor_core.Services
         public int Register(ExpertApplication application)
         {
             return _repo.Register(application);
-        }
-
-        [Obsolete("No longer valid since we dont store timezone names since we switched to lat long")]
-        public bool UpdateTimezone(string userId, int timezoneId)
-        {
-            return _repo.UpdateTimezone(userId, timezoneId);
         }
 
         public bool UpdateLocation(string userId, LocationData location)

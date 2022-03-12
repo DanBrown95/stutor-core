@@ -13,9 +13,6 @@ namespace stutor_core.Models.Sql
         [Required, ForeignKey(nameof(User))]
         public string UserId { get; set; }
 
-        [Required, ForeignKey(nameof(Timezone))]
-        public int TimezoneId { get; set; }
-
         public string Address { get; set; }
 
         public decimal Latitude { get; set; }
@@ -28,7 +25,6 @@ namespace stutor_core.Models.Sql
         #region Foreign key mappings
 
         public virtual User User { get; set; }
-        public virtual Timezone Timezone { get; set; }
         public virtual ICollection<TopicExpert> TopicExpert { get; set; }
         public virtual ICollection<Order> Orders { get; set; }
 

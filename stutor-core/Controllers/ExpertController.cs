@@ -82,13 +82,6 @@ namespace stutor_core.Controllers
         }
 
         [HttpPost]
-        [Obsolete("not used now that we use lat long and not timezones for locations")]
-        public Timezone ExpertTimezone([FromBody] string userId)
-        {
-            return _locationService.GetTimezoneByUserId(userId);
-        }
-
-        [HttpPost]
         public LocationData ExpertLocation([FromBody] string userId)
         {
             return _locationService.GetLocationByUserId(userId);
@@ -122,13 +115,6 @@ namespace stutor_core.Controllers
         public bool ToggleIsActive([FromBody] ToggleActive vm)
         {
             return _expertService.ToggleIsActive(vm.UserId, vm.IsActive);
-        }
-
-        [HttpPost]
-        [Obsolete("No longer valid since we dont store timezone names since we switched to lat long")]
-        public bool UpdateTimezone([FromBody] UpdateTimezone vm)
-        {
-            return _expertService.UpdateTimezone(vm.UserId, vm.TimezoneId);
         }
 
         [HttpPost]

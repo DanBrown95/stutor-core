@@ -1,6 +1,5 @@
 ﻿using stutor_core.Models.Sql;
 using stutor_core.Models.ViewModels;
-using System;
 using System.Collections.Generic;
 
 namespace stutor_core.Repositories.Interfaces
@@ -20,9 +19,6 @@ namespace stutor_core.Repositories.Interfaces
         bool IsActive(string userId);
 
         bool ToggleIsActive(string userId, bool isActive);
-
-        [Obsolete("No longer valid since we dont store timezone names since we switched to lat long")]
-        bool UpdateTimezone(string userId, int timezoneId);
 
         bool UpdateLocation(string userId, LocationData location);
 

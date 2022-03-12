@@ -120,14 +120,6 @@ namespace stutor_core.Repositories
             return (_context.SaveChanges() == 1) ? !isActive : isActive;
         }
 
-        [Obsolete("No longer valid since we dont store timezone names since we switched to lat long")]
-        public bool UpdateTimezone(string userId, int timezoneId)
-        {
-            var record = _context.Expert.FirstOrDefault(x => x.UserId == userId);
-            record.TimezoneId = timezoneId;
-            return _context.SaveChanges() == 1;
-        }
-
         public bool UpdateLocation(string userId, LocationData location)
         {
             var record = _context.Expert.FirstOrDefault(x => x.UserId == userId);

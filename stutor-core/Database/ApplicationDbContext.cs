@@ -10,7 +10,6 @@ namespace stutor_core.Database
               : base(options)
         { }
 
-        public DbSet<Timezone> Timezone { get; set; }
         public DbSet<Category> Category { get; set; }
         public DbSet<PopularCategory> PopularCategory { get; set; }
         public DbSet<Topic> Topic { get; set; }
